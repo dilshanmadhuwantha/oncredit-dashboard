@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oncredit – Agent Dashboard</title>
+<title>Oncredit Dashboard</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
 <style>
 :root{
@@ -17,7 +17,7 @@
     --shadow:0 3px 10px rgba(0,0,0,.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
 .container{max-width:1000px;margin:auto;}
 .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
 h1{color:var(--primary);font-size:1.8rem;}
@@ -71,21 +71,18 @@ tr:hover{background:rgba(52,152,219,.1);}
 <div class="container">
     <div class="header">
         <h1>Oncredit Dashboard</h1>
-        <button id="themeToggle" class="mode-toggle" aria-label="Toggle dark mode">
-            <i class="fas fa-moon"></i>
-        </button>
+        <button id="themeToggle" class="mode-toggle"><i class="fas fa-moon"></i></button>
     </div>
-    <p class="subtitle"><span id="monthYear"></span> | Select Agent & Date</p>
+    <p class="subtitle">November 2025 | Select Agent & Date</p>
 
     <div class="controls">
         <select id="agentSelect" onchange="updateStats()">
             <option value="">-- Select Agent --</option>
         </select>
-        <input type="date" id="datePicker" onchange="updateStats()">
-        <button class="btn btn-clear" onclick="clearSelection()">Clear</button>
+        <input type="date" id="datePicker" value="2025-11-11" onchange="updateStats()">
+        <button class="btn" onclick="clearSelection()">Clear</button>
     </div>
 
-    <!-- TARGET BUTTONS -->
     <div class="target-selection" id="targetBox" style="display:none;">
         <strong>Select Your Monthly Target:</strong><br>
         <button class="btn target-btn" data-val="6000000">6Mn</button>
@@ -95,7 +92,7 @@ tr:hover{background:rgba(52,152,219,.1);}
         <button class="btn target-btn" data-val="10000000">10Mn</button>
     </div>
 
-    <div class="tabs" role="tablist">
+    <div class="tabs">
         <div class="tab active" onclick="openTab('agent')">Agent Stats</div>
         <div class="tab" onclick="openTab('without')">Without+Pre+Due</div>
         <div class="tab" onclick="openTab('soft')">Soft</div>
@@ -118,9 +115,9 @@ tr:hover{background:rgba(52,152,219,.1);}
         </div>
 
         <div class="progress-wrap">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div style="display:flex;justify-content:space-between;">
                 <strong>Progress to Target</strong>
-                <small id="progressCaption" style="color:#7f8c8d;">0% of target</small>
+                <small id="progressCaption">0% of target</small>
             </div>
             <div class="progress-row">
                 <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
@@ -129,7 +126,7 @@ tr:hover{background:rgba(52,152,219,.1);}
         </div>
     </div>
 
-    <!-- BUCKET TABLES -->
+    <!-- BUCKETS -->
     <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
     <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
     <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
@@ -140,97 +137,105 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === YOUR EXACT CSV LINK ===
-const DAILY_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv';
+// === YOUR REAL DATA (EMBEDDED) ===
+const CSV_DATA = `Date,Operator Name,Total Bonusses,Collected,Without+Pre+Due Collection,Soft Collection,Medium Collection,Hard Collection,Restruct Collection,Call count,New loan count
+11/11/2025,Chathura Kosala,"29,760.86","2,843,105.00","2,332,236.00","510,869.50",0.00,0.00,0.00,1322,
+11/11/2025,Eshan Shashika,"27,909.04","2,772,654.00","2,401,084.00","348,970.00","4,000.00","18,600.00",0.00,1556,
+11/11/2025,Sandali Nisansala,"170,889.26","2,736,445.00","1,845,725.00","765,720.00",0.00,"125,000.00",0.00,1446,
+11/11/2025,Preeni Sanoja,"19,240.81","2,694,963.00","2,276,512.00","398,890.80","19,560.00",0.00,0.00,1548,
+11/11/2025,Sandeepa Lakruwan,"27,866.33","2,468,173.00","1,830,221.00","535,952.00",0.00,"102,000.00",0.00,1716,
+11/11/2025,Sasantha Udesh,"18,783.15","2,439,180.00","2,269,935.00","169,245.00",0.00,0.00,0.00,1456,
+11/11/2025,Raveesha Nethmini,"9,379.93","2,414,763.00","2,134,800.00","262,463.00",0.00,"17,500.00",0.00,1459,
+11/11/2025,Maleesha Kalhara,"3,551.76","2,350,421.00","2,051,043.00","299,378.00",0.00,0.00,0.00,1519,
+11/11/2025,Ruchini Navanjana,"119,010.33","2,307,533.00","1,612,791.00","694,742.00",0.00,0.00,0.00,1586,
+11/11/2025,Pavithra Thangarajah,57.70,"2,238,049.00","1,840,129.00","388,420.00","7,000.00",0.00,"2,500.00",945,
+11/11/2025,Kalindu Sachith,0.00,"2,184,012.00","1,848,352.00","323,660.00","7,000.00","5,000.00",0.00,1845,
+11/11/2025,Lehan Hansaja,"43,630.77","2,164,362.00","1,592,967.00","571,395.00",0.00,0.00,0.00,1032,
+11/11/2025,Venura Lakshitha,115.40,"2,136,137.00","1,778,575.00","352,562.00",0.00,0.00,"5,000.00",1542,
+11/11/2025,Ishani Saraswathy,0.00,"2,135,277.00","1,687,922.00","401,600.00","32,600.00","13,155.00",0.00,1897,
+11/11/2025,Gihan Pamodh,0.00,"2,123,335.00","1,831,315.00","292,020.00",0.00,0.00,0.00,1300,
+11/11/2025,Amandi Upeksha,0.00,"1,401,588.00","1,064,594.00","334,794.00","2,200.00",0.00,0.00,1490,
+11/11/2025,Avishka Shalinda,46.16,"834,102.60","651,084.60","181,018.00",0.00,0.00,"2,000.00",1220,`;
 
 let allRows = [];
 let selectedAgent = '';
-let selectedDate = '';
-let selectedTarget = 0;
+let selectedDate = '2025-11-11';
+let selectedTarget = 6000000;
 
 // Format LKR
 function formatLKR(n) {
     return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
 }
 
-// Parse CSV with exact column names
+// Parse CSV (handles quotes)
 function parseCSV(text) {
     const lines = text.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    return lines.slice(1).map(l => {
-        const vals = l.split(',').map(v => v.trim().replace(/"/g, ''));
+    return lines.slice(1).map(line => {
+        const vals = [];
+        let field = '', inQuote = false;
+        for (let c of line + ',') {
+            if (c === '"') inQuote = !inQuote;
+            else if (c === ',' && !inQuote) { vals.push(field); field = ''; }
+            else field += c;
+        }
         const obj = {};
         headers.forEach((h, i) => {
-            obj[h] = isNaN(vals[i]) || vals[i] === '' ? vals[i] : +vals[i];
+            const v = vals[i] || '';
+            obj[h] = isNaN(v) || v === '' ? v : +v;
         });
         return obj;
     });
 }
 
 // Load Data
-async function loadData() {
-    try {
-        const csv = await fetch(DAILY_URL).then(r => r.text());
-        allRows = parseCSV(csv);
-
-        const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
-        const select = document.getElementById('agentSelect');
-        select.innerHTML = '<option value="">-- Select Agent --</option>' +
-            agents.map(a => `<option value="${a}">${a}</option>`).join('');
-
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('datePicker').value = today;
-
-        updateStats();
-        console.log('Loaded rows:', allRows.length);
-    } catch (e) {
-        console.error('CSV Load Failed:', e);
-        alert('Error loading data. Open console (F12) and check CSV link.');
-    }
+function loadData() {
+    allRows = parseCSV(CSV_DATA);
+    const agents = [...new Set(allRows.map(r => r['Operator Name']))].sort();
+    const select = document.getElementById('agentSelect');
+    select.innerHTML = '<option value="">-- Select Agent --</option>' +
+        agents.map(a => `<option value="${a}">${a}</option>`).join('');
+    updateStats();
 }
 
-// Update Stats
+// Update
 function updateStats() {
     selectedAgent = document.getElementById('agentSelect').value;
-    selectedDate = document.getElementById('datePicker').value;
-    document.getElementById('targetBox').style.display = selectedAgent && selectedDate ? 'block' : 'none';
+    selectedDate = document.getElementById('datePicker').value || '2025-11-11';
+    document.getElementById('targetBox').style.display = selectedAgent ? 'block' : 'none';
 
-    if (!selectedAgent || !selectedDate) return;
+    if (!selectedAgent) return;
 
     const saved = localStorage.getItem(`target_${selectedAgent}`);
-    selectedTarget = saved ? Number(saved) : 0;
+    selectedTarget = saved ? +saved : 6000000;
     document.querySelectorAll('.target-btn').forEach(b => {
-        b.classList.toggle('selected', Number(b.dataset.val) === selectedTarget);
+        b.classList.toggle('selected', +b.dataset.val === selectedTarget);
     });
 
     calculateStats();
     updateBuckets();
 }
 
-// Calculate Stats
+// Calculate
 function calculateStats() {
-    const todayRow = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
-    const yesterday = new Date(selectedDate);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayISO = yesterday.toISOString().split('T')[0];
-    const yesterdayRow = allRows.find(r => r['Date'] === yesterdayISO && r['Operator Name'] === selectedAgent);
+    const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
+    if (!row) return;
 
-    const ytd = Number(todayRow?.Total) || 0;
-    const yesterdayCollected = ytd - (Number(yesterdayRow?.Total) || 0);
+    const ytd = row.Total || 0;
     const deficit = selectedTarget - ytd;
-    const daysLeft = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1;
+    const daysLeft = 20;
     const dailyReq = deficit > 0 ? Math.ceil(deficit / daysLeft) : 0;
 
     document.getElementById('target').textContent = formatLKR(selectedTarget);
     document.getElementById('collected').textContent = formatLKR(ytd);
-    document.getElementById('yesterdayCollected').textContent = formatLKR(yesterdayCollected);
+    document.getElementById('yesterdayCollected').textContent = formatLKR(0); // No yesterday data
     const defEl = document.getElementById('deficit');
     defEl.textContent = formatLKR(Math.abs(deficit));
     defEl.className = deficit > 0 ? 'negative' : 'positive';
     document.getElementById('daysLeft').textContent = daysLeft;
     document.getElementById('dailyRequired').textContent = formatLKR(dailyReq) + '/day';
-    document.getElementById('callsToday').textContent = todayRow?.['Call count'] || 0;
-    document.getElementById('bonus').textContent = formatLKR(todayRow?.Bonusses || 0);
+    document.getElementById('callsToday').textContent = row['Call count'] || 0;
+    document.getElementById('bonus').textContent = formatLKR(row['Total Bonusses'] || 0);
 
     const pct = selectedTarget > 0 ? (ytd / selectedTarget) * 100 : 0;
     const pctR = Math.min(Math.round(pct), 300);
@@ -238,41 +243,38 @@ function calculateStats() {
     fill.style.width = Math.min(pctR, 100) + '%';
     document.getElementById('progressPercent').textContent = pctR + '%';
     document.getElementById('progressCaption').textContent = pctR + '% of target';
-    fill.style.background = pctR >= 100 ? 'linear-gradient(90deg,#2ecc71,#27ae60)' : 'linear-gradient(90deg,var(--primary),#2980b9)';
 }
 
-// Update Buckets
+// Buckets
 function updateBuckets() {
-    const todayRows = allRows.filter(r => r['Date'] === selectedDate);
-    const bucketMap = {
+    const today = allRows.filter(r => r.Date === selectedDate);
+    const map = {
         without: 'Without+Pre+Due Collection',
         soft: 'Soft Collection',
         medium: 'Medium Collection',
         hard: 'Hard Collection',
         restruct: 'Restruct Collection'
     };
-    Object.entries(bucketMap).forEach(([key, col]) => {
-        const sorted = todayRows
-            .map(r => ({ name: r['Operator Name'], amt: Number(r[col]) || 0 }))
-            .sort((a, b) => b.amt - a.amt)
-            .slice(0, 5);
-        const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
-        tbody.innerHTML = sorted.map((x, i) => `<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
+    Object.entries(map).forEach(([k, col]) => {
+        const sorted = today.map(r => ({name: r['Operator Name'], amt: +(r[col] || 0)}))
+            .sort((a,b) => b.amt - a.amt).slice(0,5);
+        const tbody = document.querySelector(`#tbl${k.charAt(0).toUpperCase() + k.slice(1)} tbody`);
+        tbody.innerHTML = sorted.map((x,i) => `<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
     });
 }
 
-// Target Buttons
-document.querySelectorAll('.target-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedTarget = Number(btn.dataset.val);
+// Target
+document.querySelectorAll('.target-btn').forEach(b => {
+    b.onclick = () => {
+        document.querySelectorAll('.target-btn').forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        selectedTarget = +b.dataset.val;
         localStorage.setItem(`target_${selectedAgent}`, selectedTarget);
         calculateStats();
     };
 });
 
-// Tab Switch
+// Tabs
 function openTab(id) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -281,42 +283,24 @@ function openTab(id) {
     if (id === 'agent') calculateStats();
 }
 
-// Clear
 function clearSelection() {
     document.getElementById('agentSelect').value = '';
-    document.getElementById('datePicker').value = '';
     document.getElementById('targetBox').style.display = 'none';
-    selectedAgent = ''; selectedDate = ''; selectedTarget = 0;
-}
-
-// Header/Footer
-function updateHeaderFooter() {
-    const now = new Date();
-    document.getElementById('monthYear').textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
-    document.getElementById('footerNote').innerHTML = `Updated: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} | Oncredit | <strong>${daysLeft} days left</strong>`;
 }
 
 // Theme
-const themeToggle = document.getElementById('themeToggle');
-function applyTheme(t) {
-    document.body.setAttribute('data-theme', t);
-    themeToggle.innerHTML = t === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    localStorage.setItem('theme', t);
-}
-themeToggle.addEventListener('click', () => {
-    const cur = document.body.getAttribute('data-theme') || 'light';
-    applyTheme(cur === 'dark' ? 'light' : 'dark');
-});
+document.getElementById('themeToggle').onclick = () => {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+};
 
 // Init
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadData();
-    updateHeaderFooter();
-    const saved = localStorage.getItem('theme') || 'light';
-    applyTheme(saved);
-    openTab('agent');
-    setInterval(() => { loadData(); updateHeaderFooter(); }, 5 * 60 * 1000);
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    document.getElementById('footerNote').textContent = `Updated: 11/11/2025 01:22 PM | Oncredit | 20 days left`;
+    const theme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', theme);
 });
 </script>
 </body>
