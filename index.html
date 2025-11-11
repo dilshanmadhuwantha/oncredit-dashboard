@@ -70,7 +70,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 <body>
 <div class="container">
     <div class="header">
-        <h1><i class="fas fa-chart-line"></i> Oncredit Dashboard</h1>
+        <h1>Oncredit Dashboard</h1>
         <button id="themeToggle" class="mode-toggle" aria-label="Toggle dark mode">
             <i class="fas fa-moon"></i>
         </button>
@@ -107,14 +107,14 @@ tr:hover{background:rgba(52,152,219,.1);}
     <!-- AGENT STATS -->
     <div id="agent" class="tab-content active">
         <div class="stats-grid">
-            <div class="stat-card"><h3><i class="fas fa-bullseye"></i> Monthly Target</h3><p id="target" class="info">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-wallet"></i> Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-calendar-day"></i> Yesterday's Collection</h3><p id="yesterdayCollected" class="positive">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-exclamation-triangle"></i> Deficit</h3><p id="deficit" class="negative">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-clock"></i> Days Left</h3><p id="daysLeft" class="info">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-calculator"></i> Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-phone"></i> Calls Today</h3><p id="callsToday" class="info">-</p></div>
-            <div class="stat-card"><h3><i class="fas fa-gift"></i> Bonus</h3><p id="bonus" class="positive">-</p></div>
+            <div class="stat-card"><h3>Monthly Target</h3><p id="target" class="info">-</p></div>
+            <div class="stat-card"><h3>Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
+            <div class="stat-card"><h3>Yesterday's Collection</h3><p id="yesterdayCollected" class="positive">-</p></div>
+            <div class="stat-card"><h3>Deficit</h3><p id="deficit" class="negative">-</p></div>
+            <div class="stat-card"><h3>Days Left</h3><p id="daysLeft" class="info">-</p></div>
+            <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
+            <div class="stat-card"><h3>Calls Today</h3><p id="callsToday" class="info">-</p></div>
+            <div class="stat-card"><h3>Bonus</h3><p id="bonus" class="positive">-</p></div>
         </div>
 
         <div class="progress-wrap">
@@ -130,145 +130,141 @@ tr:hover{background:rgba(52,152,219,.1);}
     </div>
 
     <!-- BUCKET TABLES -->
-    <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-users"></i> Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-hand-holding-heart"></i> Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-balance-scale"></i> Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="hard" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-fist-raised"></i> Top 5 – Hard</div><table id="tblHard"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="restruct" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-tools"></i> Top 5 – Restruct</div><table id="tblRestruct"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="hard" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Hard</div><table id="tblHard"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="restruct" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Restruct</div><table id="tblRestruct"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
 
     <div class="footer" id="footerNote"></div>
 </div>
 
 <script>
-// ---------- CONFIG: YOUR NEW CSV LINK ----------
+// === YOUR EXACT CSV LINK ===
 const DAILY_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv';
 
-// ---------- GLOBAL ----------
 let allRows = [];
 let selectedAgent = '';
 let selectedDate = '';
 let selectedTarget = 0;
 
-// ---------- HELPERS ----------
-function formatLKR(n){ return "LKR " + Number(n||0).toLocaleString('en-LK',{maximumFractionDigits:0}); }
-function clamp(v,min,max){ return Math.max(min,Math.min(v,max)); }
-function parseCSV(text){
+// Format LKR
+function formatLKR(n) {
+    return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
+}
+
+// Parse CSV with exact column names
+function parseCSV(text) {
     const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
-    return lines.slice(1).map(l=>{
-        const vals = l.split(',').map(v=>v.trim().replace(/"/g,''));
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    return lines.slice(1).map(l => {
+        const vals = l.split(',').map(v => v.trim().replace(/"/g, ''));
         const obj = {};
-        headers.forEach((h,i)=>obj[h]=isNaN(vals[i])?vals[i]:+vals[i]);
+        headers.forEach((h, i) => {
+            obj[h] = isNaN(vals[i]) || vals[i] === '' ? vals[i] : +vals[i];
+        });
         return obj;
     });
 }
 
-// ---------- LOAD DATA ----------
-async function loadData(){
-    try{
-        const csv = await fetch(DAILY_URL).then(r=>r.text());
+// Load Data
+async function loadData() {
+    try {
+        const csv = await fetch(DAILY_URL).then(r => r.text());
         allRows = parseCSV(csv);
 
-        // Populate agents
-        const agents = [...new Set(allRows.map(r=>r['Operator Name']))].filter(Boolean).sort();
+        const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
         const select = document.getElementById('agentSelect');
-        select.innerHTML = '<option value="">-- Select Agent --</option>' + 
-            agents.map(a=>`<option value="${a}">${a}</option>`).join('');
+        select.innerHTML = '<option value="">-- Select Agent --</option>' +
+            agents.map(a => `<option value="${a}">${a}</option>`).join('');
 
-        // Default date = today
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('datePicker').value = today;
 
         updateStats();
-        console.log('Data loaded:', allRows.length, 'rows');
-    }catch(e){
-        console.error('Load error:', e);
-        alert('Failed to load data. Check console (F12) and ensure CSV link is public.');
+        console.log('Loaded rows:', allRows.length);
+    } catch (e) {
+        console.error('CSV Load Failed:', e);
+        alert('Error loading data. Open console (F12) and check CSV link.');
     }
 }
 
-// ---------- UPDATE STATS ----------
-function updateStats(){
+// Update Stats
+function updateStats() {
     selectedAgent = document.getElementById('agentSelect').value;
     selectedDate = document.getElementById('datePicker').value;
     document.getElementById('targetBox').style.display = selectedAgent && selectedDate ? 'block' : 'none';
 
-    if(!selectedAgent || !selectedDate) return;
+    if (!selectedAgent || !selectedDate) return;
 
-    // Load saved target
     const saved = localStorage.getItem(`target_${selectedAgent}`);
     selectedTarget = saved ? Number(saved) : 0;
-
-    // Highlight button
-    document.querySelectorAll('.target-btn').forEach(b=>{
-        b.classList.toggle('selected', Number(b.dataset.val) == selectedTarget);
+    document.querySelectorAll('.target-btn').forEach(b => {
+        b.classList.toggle('selected', Number(b.dataset.val) === selectedTarget);
     });
 
     calculateStats();
     updateBuckets();
 }
 
-// ---------- CALCULATE STATS ----------
-function calculateStats(){
-    const todayRow = allRows.find(r=>r['Date']===selectedDate && r['Operator Name']===selectedAgent);
+// Calculate Stats
+function calculateStats() {
+    const todayRow = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
     const yesterday = new Date(selectedDate);
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayISO = yesterday.toISOString().split('T')[0];
-    const yesterdayRow = allRows.find(r=>r['Date']===yesterdayISO && r['Operator Name']===selectedAgent);
+    const yesterdayRow = allRows.find(r => r['Date'] === yesterdayISO && r['Operator Name'] === selectedAgent);
 
     const ytd = Number(todayRow?.Total) || 0;
     const yesterdayCollected = ytd - (Number(yesterdayRow?.Total) || 0);
     const deficit = selectedTarget - ytd;
-    const daysLeft = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate() - new Date().getDate() + 1;
+    const daysLeft = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1;
     const dailyReq = deficit > 0 ? Math.ceil(deficit / daysLeft) : 0;
 
     document.getElementById('target').textContent = formatLKR(selectedTarget);
     document.getElementById('collected').textContent = formatLKR(ytd);
     document.getElementById('yesterdayCollected').textContent = formatLKR(yesterdayCollected);
     const defEl = document.getElementById('deficit');
-    defEl.textContent = formatLKR(deficit);
+    defEl.textContent = formatLKR(Math.abs(deficit));
     defEl.className = deficit > 0 ? 'negative' : 'positive';
     document.getElementById('daysLeft').textContent = daysLeft;
     document.getElementById('dailyRequired').textContent = formatLKR(dailyReq) + '/day';
     document.getElementById('callsToday').textContent = todayRow?.['Call count'] || 0;
     document.getElementById('bonus').textContent = formatLKR(todayRow?.Bonusses || 0);
 
-    // Progress
     const pct = selectedTarget > 0 ? (ytd / selectedTarget) * 100 : 0;
-    const pctR = clamp(Math.round(pct),0,300);
+    const pctR = Math.min(Math.round(pct), 300);
     const fill = document.getElementById('progressFill');
-    fill.style.width = Math.min(pctR,100)+'%';
-    document.getElementById('progressPercent').textContent = pctR+'%';
-    document.getElementById('progressCaption').textContent = pctR+'% of target';
-    fill.style.background = pctR>=100 ?
-        'linear-gradient(90deg,#2ecc71,#27ae60)' :
-        'linear-gradient(90deg,var(--primary),#2980b9)';
+    fill.style.width = Math.min(pctR, 100) + '%';
+    document.getElementById('progressPercent').textContent = pctR + '%';
+    document.getElementById('progressCaption').textContent = pctR + '% of target';
+    fill.style.background = pctR >= 100 ? 'linear-gradient(90deg,#2ecc71,#27ae60)' : 'linear-gradient(90deg,var(--primary),#2980b9)';
 }
 
-// ---------- BUCKET TOP 5 ----------
-function updateBuckets(){
-    const todayRows = allRows.filter(r=>r['Date']===selectedDate);
+// Update Buckets
+function updateBuckets() {
+    const todayRows = allRows.filter(r => r['Date'] === selectedDate);
     const bucketMap = {
         without: 'Without+Pre+Due Collection',
-        soft:    'Soft Collection',
-        medium:  'Medium Collection',
-        hard:    'Hard Collection',
-        restruct:'Restruct Collection'
+        soft: 'Soft Collection',
+        medium: 'Medium Collection',
+        hard: 'Hard Collection',
+        restruct: 'Restruct Collection'
     };
-    Object.entries(bucketMap).forEach(([key,col])=>{
+    Object.entries(bucketMap).forEach(([key, col]) => {
         const sorted = todayRows
-            .map(r=>({name:r['Operator Name'], amt:Number(r[col])||0}))
-            .sort((a,b)=>b.amt-a.amt)
-            .slice(0,5);
-        const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase()+key.slice(1)} tbody`);
-        tbody.innerHTML = sorted.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
+            .map(r => ({ name: r['Operator Name'], amt: Number(r[col]) || 0 }))
+            .sort((a, b) => b.amt - a.amt)
+            .slice(0, 5);
+        const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
+        tbody.innerHTML = sorted.map((x, i) => `<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
     });
 }
 
-// ---------- TARGET BUTTONS ----------
-document.querySelectorAll('.target-btn').forEach(btn=>{
+// Target Buttons
+document.querySelectorAll('.target-btn').forEach(btn => {
     btn.onclick = () => {
-        document.querySelectorAll('.target-btn').forEach(b=>b.classList.remove('selected'));
+        document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedTarget = Number(btn.dataset.val);
         localStorage.setItem(`target_${selectedAgent}`, selectedTarget);
@@ -276,52 +272,51 @@ document.querySelectorAll('.target-btn').forEach(btn=>{
     };
 });
 
-// ---------- TAB SWITCH ----------
-function openTab(id){
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+// Tab Switch
+function openTab(id) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.tab[onclick="openTab('${id}')"]`).classList.add('active');
-    if(id==='agent') calculateStats();
+    if (id === 'agent') calculateStats();
 }
 
-// ---------- CLEAR ----------
-function clearSelection(){
-    document.getElementById('agentSelect').value='';
-    document.getElementById('datePicker').value='';
-    document.getElementById('targetBox').style.display='none';
-    selectedAgent=''; selectedDate=''; selectedTarget=0;
+// Clear
+function clearSelection() {
+    document.getElementById('agentSelect').value = '';
+    document.getElementById('datePicker').value = '';
+    document.getElementById('targetBox').style.display = 'none';
+    selectedAgent = ''; selectedDate = ''; selectedTarget = 0;
 }
 
-// ---------- HEADER / FOOTER ----------
-function updateHeaderFooter(){
+// Header/Footer
+function updateHeaderFooter() {
     const now = new Date();
-    document.getElementById('monthYear').textContent = now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-    const daysLeft = new Date(now.getFullYear(),now.getMonth()+1,0).getDate() - now.getDate() + 1;
-    const foot = document.getElementById('footerNote');
-    foot.innerHTML = `Updated: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})} | Oncredit | <strong>${daysLeft} days left</strong>`;
+    document.getElementById('monthYear').textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
+    document.getElementById('footerNote').innerHTML = `Updated: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} | Oncredit | <strong>${daysLeft} days left</strong>`;
 }
 
-// ---------- THEME ----------
+// Theme
 const themeToggle = document.getElementById('themeToggle');
-function applyTheme(t){
-    document.body.setAttribute('data-theme',t);
-    themeToggle.innerHTML = t==='dark'?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';
-    localStorage.setItem('theme',t);
+function applyTheme(t) {
+    document.body.setAttribute('data-theme', t);
+    themeToggle.innerHTML = t === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    localStorage.setItem('theme', t);
 }
-themeToggle.addEventListener('click',()=>{
-    const cur = document.body.getAttribute('data-theme')||'light';
-    applyTheme(cur==='dark'?'light':'dark');
+themeToggle.addEventListener('click', () => {
+    const cur = document.body.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
 });
 
-// ---------- INIT ----------
-document.addEventListener('DOMContentLoaded',async()=>{
+// Init
+document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     updateHeaderFooter();
-    const saved = localStorage.getItem('theme')||'light';
+    const saved = localStorage.getItem('theme') || 'light';
     applyTheme(saved);
     openTab('agent');
-    setInterval(()=>{ loadData(); updateHeaderFooter(); }, 5*60*1000);
+    setInterval(() => { loadData(); updateHeaderFooter(); }, 5 * 60 * 1000);
 });
 </script>
 </body>
