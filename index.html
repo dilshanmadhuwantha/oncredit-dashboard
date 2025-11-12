@@ -71,7 +71,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 <div class="container">
     <div class="header">
         <h1>Oncredit Dashboard</h1>
-        <button id="themeToggle" class="mode-toggle"><i class="fas fa-moon"></i></button>
+        <button id="themeToggle" class="mode-toggle">Moon Icon</button>
     </div>
     <p class="subtitle">November 2025 | Select Agent & Date</p>
 
@@ -137,25 +137,25 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === CLEANED & WORKING CSV DATA ===
+// === CLEANED & FIXED CSV DATA ===
 const CSV_DATA = `Date,Operator Name,Total Bonusses,Collected,Without+Pre+Due Collection,Soft Collection,Medium Collection,Hard Collection,Restruct Collection,Call count,New loan count
-11/11/2025,Chathura Kosala,29760.86,2843105.00,2332236.00,510869.50,0.00,0.00,0.00,1322,
-11/11/2025,Eshan Shashika,27909.04,2772654.00,2401084.00,348970.00,4000.00,18600.00,0.00,1556,
-11/11/2025,Sandali Nisansala,170889.26,2736445.00,1845725.00,765720.00,0.00,125000.00,0.00,1446,
-11/11/2025,Preeni Sanoja,19240.81,2694963.00,2276512.00,398890.80,19560.00,0.00,0.00,1548,
-11/11/2025,Sandeepa Lakruwan,27866.33,2468173.00,1830221.00,535952.00,0.00,102000.00,0.00,1716,
-11/11/2025,Sasantha Udesh,18783.15,2439180.00,2269935.00,169245.00,0.00,0.00,0.00,1456,
-11/11/2025,Raveesha Nethmini,9379.93,2414763.00,2134800.00,262463.00,0.00,17500.00,0.00,1459,
-11/11/2025,Maleesha Kalhara,3551.76,2350421.00,2051043.00,299378.00,0.00,0.00,0.00,1519,
-11/11/2025,Ruchini Navanjana,119010.33,2307533.00,1612791.00,694742.00,0.00,0.00,0.00,1586,
-11/11/2025,Pavithra Thangarajah,57.70,2238049.00,1840129.00,388420.00,7000.00,0.00,2500.00,945,
-11/11/2025,Kalindu Sachith,0.00,2184012.00,1848352.00,323660.00,7000.00,5000.00,0.00,1845,
-11/11/2025,Lehan Hansaja,43630.77,2164362.00,1592967.00,571395.00,0.00,0.00,0.00,1032,
-11/11/2025,Venura Lakshitha,115.40,2136137.00,1778575.00,352562.00,0.00,0.00,5000.00,1542,
-11/11/2025,Ishani Saraswathy,0.00,2135277.00,1687922.00,401600.00,32600.00,13155.00,0.00,1897,
-11/11/2025,Gihan Pamodh,0.00,2123335.00,1831315.00,292020.00,0.00,0.00,0.00,1300,
-11/11/2025,Amandi Upeksha,0.00,1401588.00,1064594.00,334794.00,2200.00,0.00,0.00,1490,
-11/11/2025,Avishka Shalinda,46.16,834102.60,651084.60,181018.00,0.00,0.00,2000.00,1220,`;
+2025-11-11,Chathura Kosala,29760.86,2843105,2332236,510869.5,0,0,0,1322,
+2025-11-11,Eshan Shashika,27909.04,2772654,2401084,348970,4000,18600,0,1556,
+2025-11-11,Sandali Nisansala,170889.26,2736445,1845725,765720,0,125000,0,1446,
+2025-11-11,Preeni Sanoja,19240.81,2694963,2276512,398890.8,19560,0,0,1548,
+2025-11-11,Sandeepa Lakruwan,27866.33,2468173,1830221,535952,0,102000,0,1716,
+2025-11-11,Sasantha Udesh,18783.15,2439180,2269935,169245,0,0,0,1456,
+2025-11-11,Raveesha Nethmini,9379.93,2414763,2134800,262463,0,17500,0,1459,
+2025-11-11,Maleesha Kalhara,3551.76,2350421,2051043,299378,0,0,0,1519,
+2025-11-11,Ruchini Navanjana,119010.33,2307533,1612791,694742,0,0,0,1586,
+2025-11-11,Pavithra Thangarajah,57.7,2238049,1840129,388420,7000,0,2500,945,
+2025-11-11,Kalindu Sachith,0,2184012,1848352,323660,7000,5000,0,1845,
+2025-11-11,Lehan Hansaja,43630.77,2164362,1592967,571395,0,0,0,1032,
+2025-11-11,Venura Lakshitha,115.4,2136137,1778575,352562,0,0,5000,1542,
+2025-11-11,Ishani Saraswathy,0,2135277,1687922,401600,32600,13155,0,1897,
+2025-11-11,Gihan Pamodh,0,2123335,1831315,292020,0,0,0,1300,
+2025-11-11,Amandi Upeksha,0,1401588,1064594,334794,2200,0,0,1490,
+2025-11-11,Avishka Shalinda,46.16,834102.6,651084.6,181018,0,0,2000,1220,`;
 
 let allRows = [];
 let selectedAgent = '';
@@ -167,36 +167,18 @@ function formatLKR(n) {
     return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
 }
 
-// Parse CSV (robust)
+// Parse CSV
 function parseCSV(text) {
     const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const headers = lines[0].split(',').map(h => h.trim());
     const rows = [];
 
     for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        const values = [];
-        let field = '';
-        let inQuote = false;
-
-        for (let j = 0; j < line.length; j++) {
-            const char = line[j];
-            if (char === '"') {
-                inQuote = !inQuote;
-            } else if (char === ',' && !inQuote) {
-                values.push(field);
-                field = '';
-            } else {
-                field += char;
-            }
-        }
-        values.push(field); // last field
-
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        if (values.length < headers.length) continue;
         const obj = {};
         headers.forEach((h, idx) => {
-            let val = values[idx] || '';
-            val = val.replace(/"/g, '').trim();
+            const val = values[idx];
             obj[h] = isNaN(val) || val === '' ? val : Number(val);
         });
         rows.push(obj);
@@ -208,24 +190,23 @@ function parseCSV(text) {
 function loadData() {
     try {
         allRows = parseCSV(CSV_DATA);
-        console.log('Parsed Rows:', allRows.length, allRows);
+        console.log('Loaded:', allRows.length, 'rows');
 
-        const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
+        const agents = [...new Set(allRows.map(r => r['Operator Name']))].sort();
         const select = document.getElementById('agentSelect');
         select.innerHTML = '<option value="">-- Select Agent --</option>' +
             agents.map(a => `<option value="${a}">${a}</option>`).join('');
 
-        // Default select first agent
+        // Auto-select first agent
         if (agents.length > 0) {
             select.value = agents[0];
             selectedAgent = agents[0];
+            document.getElementById('targetBox').style.display = 'block';
+            updateStats();
         }
-
-        updateStats();
-        document.getElementById('targetBox').style.display = 'block';
     } catch (e) {
-        console.error('Parse Error:', e);
-        alert('Data parse failed. Check console.');
+        console.error(e);
+        alert('CSV parse error');
     }
 }
 
@@ -249,9 +230,9 @@ function updateStats() {
 
 // Calculate Stats
 function calculateStats() {
-    const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
+    const row = allRows.find(r => r.Date === selectedDate && r['Operator Name'] === selectedAgent);
     if (!row) {
-        alert('No data for this agent/date');
+        console.log('No row for:', selectedAgent, selectedDate);
         return;
     }
 
@@ -264,7 +245,7 @@ function calculateStats() {
 
     document.getElementById('target').textContent = formatLKR(selectedTarget);
     document.getElementById('collected').textContent = formatLKR(ytd);
-    document.getElementById('yesterdayCollected').textContent = 'LKR 0'; // No prev data
+    document.getElementById('yesterdayCollected').textContent = 'LKR 0';
     const defEl = document.getElementById('deficit');
     defEl.textContent = formatLKR(Math.abs(deficit));
     defEl.className = deficit > 0 ? 'negative' : 'positive';
@@ -330,7 +311,7 @@ function clearSelection() {
     selectedAgent = '';
 }
 
-// Theme Toggle
+// Theme
 document.getElementById('themeToggle').onclick = () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -340,7 +321,7 @@ document.getElementById('themeToggle').onclick = () => {
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
-    document.getElementById('footerNote').innerHTML = `Updated: 11/11/2025 01:22 PM | Oncredit | <strong>20 days left</strong>`;
+    document.getElementById('footerNote').innerHTML = `Updated: 11/11/2025 | Oncredit | <strong>20 days left</strong>`;
     const theme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', theme);
 });
