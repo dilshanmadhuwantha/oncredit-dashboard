@@ -73,7 +73,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 <div class="container">
     <div class="header">
         <h1>Oncredit Dashboard</h1>
-        <button id="themeToggle" class="mode-toggle">Moon Icon</button>
+        <button id="themeToggle" class="mode-toggle">Moon</button>
     </div>
     <p class="subtitle">November 2025 | Live from Google Sheet</p>
 
@@ -145,7 +145,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === CORRECT CSV LINK ===
+// === CSV LINK ===
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv";
 
 let allRows = [];
@@ -271,7 +271,7 @@ function clearStats() {
     document.getElementById('progressCaption').textContent = '0% of target';
 }
 
-// Calculate Stats – FIXED NaN
+// Calculate Stats – FIXED
 function calculateStats() {
     const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
     if (!row) {
@@ -279,7 +279,7 @@ function calculateStats() {
         return;
     }
 
-    const ytd = parseNumber(row['Paid amount']);  // FIXED: convert "1,234,567" → 1234567
+    const ytd = parseNumber(row['Paid amount']);
     const bonus = parseNumber(row['Total Bonusses']);
     const calls = parseNumber(row['Call count']);
     const newLoans = parseNumber(row['New loan count']);
@@ -305,7 +305,7 @@ function calculateStats() {
     document.getElementById('progressCaption').textContent = pctR + '% of target';
 }
 
-// Update Buckets – FIXED NaN
+// Update Buckets – FIXED
 function updateBuckets() {
     const today = allRows.filter(r => r.Date === selectedDate);
     const buckets = {
@@ -318,7 +318,7 @@ function updateBuckets() {
 
     Object.entries(buckets).forEach(([key, col]) => {
         const sorted = today
-            .map(r => ({ name: r['Operator Name'], amt: parseNumber(r[col]) }))  // FIXED
+            .map(r => ({ name: r['Operator Name'], amt: parseNumber(r[col]) }))
             .sort((a, b) => b.amt - a.amt)
             .slice(0, 5);
         const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
