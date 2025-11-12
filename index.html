@@ -60,7 +60,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 .footer{text-align:center;margin-top:20px;color:#95a5a6;font-size:.8rem;}
 .target-selection{margin:12px 0;text-align:center;}
 #loading{display:block;text-align:center;color:var(--primary);font-weight:600;margin:20px;}
-#error{display:none;color:var(--neg);text-align:center;margin:20px;}
+#error{display:none;color:var(--neg);text-align:center;margin:20px;padding:15px;background:#ffebee;border-radius:8px;}
 @media(max-width:600px){
     .header{flex-direction:column;text-align:center;}
     .controls{flex-direction:column;}
@@ -145,8 +145,8 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === CORRECT CSV LINK ===
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv";
+// === CORRECT CSV LINK (ENTIRE DOCUMENT) ===
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv";
 
 let allRows = [];
 let selectedAgent = '';
@@ -194,8 +194,8 @@ async function fetchData() {
         const resp = await fetch(CSV_URL + '&_=' + Date.now());
         if (!resp.ok) throw new Error('Network error');
         const text = await resp.text();
-        if (text.trim() === '' || text.includes('Insufficient') || text.includes('Error')) {
-            throw new Error('CSV is empty or not published correctly.');
+        if (text.trim() === '' || text.includes('Insufficient')) {
+            throw new Error('CSV is empty. Publish as .csv');
         }
         allRows = parseCSV(text);
         console.log('Loaded', allRows.length, 'rows');
@@ -205,12 +205,12 @@ async function fetchData() {
         console.error(e);
         loading.style.display = 'none';
         error.style.display = 'block';
-        error.innerHTML = `<strong>Failed to load data:</strong><br>
-        1. Open <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">your sheet</a><br>
+        error.innerHTML = `<strong>Failed to load data</strong><br>
+        1. <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">Open Sheet</a><br>
         2. <strong>File → Share → Publish to web</strong><br>
-        3. Choose <strong>Entire Document → Comma-separated values (.csv)</strong><br>
+        3. <strong>Entire Document → .csv</strong><br>
         4. Click <strong>Publish</strong><br>
-        5. Click <strong>Refresh Data</strong> here.`;
+        5. Click <strong>Refresh Data</strong>`;
     }
 }
 
@@ -264,7 +264,7 @@ function clearStats() {
     document.getElementById('progressCaption').textContent = '0% of target';
 }
 
-// Calculate Stats
+// Calculate Stats – USING EXACT COLUMN NAMES
 function calculateStats() {
     const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
     if (!row) {
@@ -272,7 +272,7 @@ function calculateStats() {
         return;
     }
 
-    const ytd = row.Collected || 0;
+    const ytd = row['Paid amount'] || 0;  // CORRECT COLUMN
     const bonus = row['Total Bonusses'] || 0;
     const calls = row['Call count'] || 0;
     const newLoans = row['New loan count'] || 0;
@@ -298,7 +298,7 @@ function calculateStats() {
     document.getElementById('progressCaption').textContent = pctR + '% of target';
 }
 
-// Update Buckets
+// Update Buckets – USING EXACT COLUMN NAMES
 function updateBuckets() {
     const today = allRows.filter(r => r.Date === selectedDate);
     const buckets = {
@@ -315,9 +315,9 @@ function updateBuckets() {
             .sort((a, b) => b.amt - a.amt)
             .slice(0, 5);
         const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
-        tbody.innerHTML = sorted.map((x, i) => `
+        tbody.innerHTML = sorted.length ? sorted.map((x, i) => `
             <tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>
-        `).join('') || '<tr><td colspan="3">No data</td></tr>';
+        `).join('') : '<tr><td colspan="3">No data</td></tr>';
     });
 }
 
