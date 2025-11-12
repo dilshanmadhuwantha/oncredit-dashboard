@@ -76,7 +76,7 @@ tr:hover{background:rgba(52,152,219,.1);}
     </div>
     <p class="subtitle">November 2025 | Live from Google Sheet</p>
 
-    <div id="loading">Loading latest data...</div>
+    <div id="loading">Loading latest data from Google Sheet...</div>
 
     <div class="controls">
         <select id="agentSelect" onchange="updateStats()">
@@ -143,8 +143,8 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === UPDATE THIS LINK ONLY ===
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pubhtml?gid=1099036482&single=true"; // ← PASTE YOUR LINK HERE
+// === YOUR GOOGLE SHEET CSV LINK (MUST END WITH &output=csv) ===
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv";
 
 let allRows = [];
 let selectedAgent = '';
@@ -156,7 +156,7 @@ function formatLKR(n) {
     return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
 }
 
-// Parse CSV
+// Parse CSV (robust)
 function parseCSV(text) {
     const lines = text.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
@@ -181,12 +181,12 @@ function parseCSV(text) {
     return rows;
 }
 
-// Fetch Data
+// Fetch Data from Google Sheet
 async function fetchData() {
     document.getElementById('loading').style.display = 'block';
     try {
-        const resp = await fetch(CSV_URL + '&_=' + Date.now()); // bust cache
-        if (!resp.ok) throw new Error('Failed to fetch');
+        const resp = await fetch(CSV_URL + '&_=' + Date.now());
+        if (!resp.ok) throw new Error('Network error');
         const text = await resp.text();
         allRows = parseCSV(text);
         console.log('Loaded', allRows.length, 'rows from Google Sheet');
@@ -194,12 +194,12 @@ async function fetchData() {
         document.getElementById('loading').style.display = 'none';
     } catch (e) {
         console.error(e);
-        alert('Failed to load data. Check CSV URL or internet.');
+        alert('Failed to load data. Check CSV link or internet.');
         document.getElementById('loading').style.display = 'none';
     }
 }
 
-// Populate Agent & Date
+// Populate Agent & Date Dropdowns
 function populateFilters() {
     const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
     const dates = [...new Set(allRows.map(r => r['Date']))].filter(Boolean).sort().reverse();
@@ -225,7 +225,10 @@ function updateStats() {
     selectedDate = document.getElementById('datePicker').value;
     document.getElementById('targetBox').style.display = selectedAgent ? 'block' : 'none';
 
-    if (!selectedAgent || !selectedDate) return;
+    if (!selectedAgent || !selectedDate) {
+        clearStats();
+        return;
+    }
 
     const saved = localStorage.getItem(`target_${selectedAgent}`);
     selectedTarget = saved ? Number(saved) : 6000000;
@@ -235,6 +238,18 @@ function updateStats() {
 
     calculateStats();
     updateBuckets();
+}
+
+function clearStats() {
+    document.getElementById('target').textContent = '-';
+    document.getElementById('collected').textContent = '-';
+    document.getElementById('deficit').textContent = '-';
+    document.getElementById('dailyRequired').textContent = '-';
+    document.getElementById('callsToday').textContent = '-';
+    document.getElementById('bonus').textContent = '-';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressPercent').textContent = '0%';
+    document.getElementById('progressCaption').textContent = '0% of target';
 }
 
 // Calculate Stats
@@ -311,29 +326,30 @@ function openTab(id) {
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.tab[onclick="openTab('${id}')"]`).classList.add('active');
-    if (id === 'agent') calculateStats();
+    if (id === 'agent') updateStats();
 }
 
 function clearSelection() {
     document.getElementById('agentSelect').value = '';
     document.getElementById('datePicker').value = '';
     document.getElementById('targetBox').style.display = 'none';
+    clearStats();
 }
 
-// Theme
+// Theme Toggle
 document.getElementById('themeToggle').onclick = () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
 };
 
-// Auto-refresh every 5 min
+// Auto-refresh every 5 minutes
 setInterval(fetchData, 5 * 60 * 1000);
 
-// Init
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
-    document.getElementById('footerNote').innerHTML = `Live from Google Sheet | Auto-refresh every 5 min`;
+    document.getElementById('footerNote').innerHTML = `Live from Google Sheet | Auto-refresh every 5 min | <strong>51 Agents</strong>`;
     const theme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', theme);
 });
