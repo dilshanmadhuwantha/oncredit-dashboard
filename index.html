@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oncredit Dashboard</title>
+<title>Oncredit – Agent Dashboard</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
 <style>
 :root{
@@ -17,16 +17,16 @@
     --shadow:0 3px 10px rgba(0,0,0,.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
 .container{max-width:1000px;margin:auto;}
 .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
 h1{color:var(--primary);font-size:1.8rem;}
 .subtitle{color:#7f8c8d;font-size:.92rem;margin-bottom:18px;text-align:center;}
 .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 6px;}
-#agentSelect, #datePicker{padding:12px 16px;font-size:16px;width:300px;max-width:100%;border:1px solid var(--primary);border-radius:10px;background:var(--card);color:var(--text);box-shadow:var(--shadow);}
+#agentSelect{padding:12px 16px;font-size:16px;width:360px;max-width:100%;border:1px solid var(--primary);border-radius:10px;background:var(--card);color:var(--text);box-shadow:var(--shadow);}
 .btn{padding:10px 16px;font-size:14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:.2s;box-shadow:var(--shadow);}
 .btn:hover{transform:translateY(-1px);background:var(--primary);color:#fff;}
-.target-btn{background:var(--primary);color:#fff;font-weight:bold;margin:4px;border-radius:30px;padding:8px 16px;}
+.target-btn{background:var(--primary);color:#fff;font-weight:bold;}
 .target-btn.selected{background:var(--pos);border-color:var(--pos);}
 .mode-toggle{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text);}
 .tabs{display:flex;justify-content:center;margin:18px 0 10px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
@@ -59,10 +59,11 @@ tr:hover{background:rgba(52,152,219,.1);}
 .amount{font-weight:600;color:var(--pos);}
 .footer{text-align:center;margin-top:20px;color:#95a5a6;font-size:.8rem;}
 .target-selection{margin:12px 0;text-align:center;}
+.target-selection button{margin:4px;}
 @media(max-width:600px){
     .header{flex-direction:column;text-align:center;}
     .controls{flex-direction:column;}
-    #agentSelect,#datePicker{width:100%;}
+    #agentSelect{width:100%;}
     .stats-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
@@ -70,29 +71,30 @@ tr:hover{background:rgba(52,152,219,.1);}
 <body>
 <div class="container">
     <div class="header">
-        <h1>Oncredit Dashboard</h1>
-        <button id="themeToggle" class="mode-toggle"><i class="fas fa-moon"></i></button>
+        <h1><i class="fas fa-chart-line"></i> Oncredit Dashboard</h1>
+        <button id="themeToggle" class="mode-toggle" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
-    <p class="subtitle">November 2025 | Select Agent & Date</p>
+    <p class="subtitle"><span id="monthYear"></span> | Select Agent & Target</p>
 
     <div class="controls">
-        <select id="agentSelect" onchange="updateStats()">
+        <select id="agentSelect" onchange="updateAgentStats()">
             <option value="">-- Select Agent --</option>
         </select>
-        <input type="date" id="datePicker" value="2025-11-11" onchange="updateStats()">
-        <button class="btn" onclick="clearSelection()">Clear</button>
+        <button class="btn btn-clear" onclick="clearSelection()">Clear</button>
     </div>
 
-    <div class="target-selection" id="targetBox" style="display:none;">
+    <!-- TARGET SELECTION -->
+    <div class="target-selection">
         <strong>Select Your Monthly Target:</strong><br>
-        <button class="btn target-btn" data-val="6000000">6Mn</button>
-        <button class="btn target-btn" data-val="7000000">7Mn</button>
-        <button class="btn target-btn" data-val="8000000">8Mn</button>
-        <button class="btn target-btn" data-val="9000000">9Mn</button>
-        <button class="btn target-btn" data-val="10000000">10Mn</button>
+        <button class="btn target-btn" data-target="7000000">7Mn</button>
+        <button class="btn target-btn" data-target="8000000">8Mn</button>
+        <button class="btn target-btn" data-target="9000000">9Mn</button>
+        <button class="btn target-btn" data-target="10000000">10Mn</button>
     </div>
 
-    <div class="tabs">
+    <div class="tabs" role="tablist">
         <div class="tab active" onclick="openTab('agent')">Agent Stats</div>
         <div class="tab" onclick="openTab('without')">Without+Pre+Due</div>
         <div class="tab" onclick="openTab('soft')">Soft</div>
@@ -104,20 +106,20 @@ tr:hover{background:rgba(52,152,219,.1);}
     <!-- AGENT STATS -->
     <div id="agent" class="tab-content active">
         <div class="stats-grid">
-            <div class="stat-card"><h3>Monthly Target</h3><p id="target" class="info">-</p></div>
-            <div class="stat-card"><h3>Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
-            <div class="stat-card"><h3>Yesterday's Collection</h3><p id="yesterdayCollected" class="positive">-</p></div>
-            <div class="stat-card"><h3>Deficit</h3><p id="deficit" class="negative">-</p></div>
-            <div class="stat-card"><h3>Days Left</h3><p id="daysLeft" class="info">-</p></div>
-            <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
-            <div class="stat-card"><h3>Calls Today</h3><p id="callsToday" class="info">-</p></div>
-            <div class="stat-card"><h3>Bonus</h3><p id="bonus" class="positive">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-bullseye"></i> Monthly Target</h3><p id="target" class="info">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-wallet"></i> Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-calendar-day"></i> Today’s Collection</h3><p id="todayCollected" class="positive">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-exclamation-triangle"></i> Deficit</h3><p id="deficit" class="negative">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-clock"></i> Days Left</h3><p id="daysLeft" class="info">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-calculator"></i> Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-phone"></i> Calls Today</h3><p id="callsToday" class="info">-</p></div>
+            <div class="stat-card"><h3><i class="fas fa-gift"></i> Bonus</h3><p id="bonus" class="positive">-</p></div>
         </div>
 
         <div class="progress-wrap">
-            <div style="display:flex;justify-content:space-between;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
                 <strong>Progress to Target</strong>
-                <small id="progressCaption">0% of target</small>
+                <small id="progressCaption" style="color:#7f8c8d;">0% of target</small>
             </div>
             <div class="progress-row">
                 <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
@@ -126,181 +128,162 @@ tr:hover{background:rgba(52,152,219,.1);}
         </div>
     </div>
 
-    <!-- BUCKETS -->
-    <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="hard" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Hard</div><table id="tblHard"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
-    <div id="restruct" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Restruct</div><table id="tblRestruct"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <!-- BUCKET TABS -->
+    <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-users"></i> Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-hand-holding-heart"></i> Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-balance-scale"></i> Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="hard" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-fist-raised"></i> Top 5 – Hard</div><table id="tblHard"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="restruct" class="tab-content"><div class="bucket-section"><div class="bucket-title"><i class="fas fa-tools"></i> Top 5 – Restruct</div><table id="tblRestruct"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
 
     <div class="footer" id="footerNote"></div>
 </div>
 
 <script>
-// === YOUR REAL DATA (EMBEDDED) ===
-const CSV_DATA = `Date,Operator Name,Total Bonusses,Collected,Without+Pre+Due Collection,Soft Collection,Medium Collection,Hard Collection,Restruct Collection,Call count,New loan count
-11/11/2025,Chathura Kosala,"29,760.86","2,843,105.00","2,332,236.00","510,869.50",0.00,0.00,0.00,1322,
-11/11/2025,Eshan Shashika,"27,909.04","2,772,654.00","2,401,084.00","348,970.00","4,000.00","18,600.00",0.00,1556,
-11/11/2025,Sandali Nisansala,"170,889.26","2,736,445.00","1,845,725.00","765,720.00",0.00,"125,000.00",0.00,1446,
-11/11/2025,Preeni Sanoja,"19,240.81","2,694,963.00","2,276,512.00","398,890.80","19,560.00",0.00,0.00,1548,
-11/11/2025,Sandeepa Lakruwan,"27,866.33","2,468,173.00","1,830,221.00","535,952.00",0.00,"102,000.00",0.00,1716,
-11/11/2025,Sasantha Udesh,"18,783.15","2,439,180.00","2,269,935.00","169,245.00",0.00,0.00,0.00,1456,
-11/11/2025,Raveesha Nethmini,"9,379.93","2,414,763.00","2,134,800.00","262,463.00",0.00,"17,500.00",0.00,1459,
-11/11/2025,Maleesha Kalhara,"3,551.76","2,350,421.00","2,051,043.00","299,378.00",0.00,0.00,0.00,1519,
-11/11/2025,Ruchini Navanjana,"119,010.33","2,307,533.00","1,612,791.00","694,742.00",0.00,0.00,0.00,1586,
-11/11/2025,Pavithra Thangarajah,57.70,"2,238,049.00","1,840,129.00","388,420.00","7,000.00",0.00,"2,500.00",945,
-11/11/2025,Kalindu Sachith,0.00,"2,184,012.00","1,848,352.00","323,660.00","7,000.00","5,000.00",0.00,1845,
-11/11/2025,Lehan Hansaja,"43,630.77","2,164,362.00","1,592,967.00","571,395.00",0.00,0.00,0.00,1032,
-11/11/2025,Venura Lakshitha,115.40,"2,136,137.00","1,778,575.00","352,562.00",0.00,0.00,"5,000.00",1542,
-11/11/2025,Ishani Saraswathy,0.00,"2,135,277.00","1,687,922.00","401,600.00","32,600.00","13,155.00",0.00,1897,
-11/11/2025,Gihan Pamodh,0.00,"2,123,335.00","1,831,315.00","292,020.00",0.00,0.00,0.00,1300,
-11/11/2025,Amandi Upeksha,0.00,"1,401,588.00","1,064,594.00","334,794.00","2,200.00",0.00,0.00,1490,
-11/11/2025,Avishka Shalinda,46.16,"834,102.60","651,084.60","181,018.00",0.00,0.00,"2,000.00",1220,`;
+/* ---------- CONFIG ---------- */
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv';
+let todayRows = [];
 
-let allRows = [];
-let selectedAgent = '';
-let selectedDate = '2025-11-11';
-let selectedTarget = 6000000;
-
-// Format LKR
-function formatLKR(n) {
-    return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
-}
-
-// Parse CSV (handles quotes)
-function parseCSV(text) {
+/* ---------- HELPERS ---------- */
+function formatL BOTHKR(n){ return "LKR " + Number(n||0).toLocaleString('en-LK',{maximumFractionDigits:0}); }
+function clamp(v,min,max){ return Math.max(min,Math.min(v,max)); }
+function parseCSV(text){
     const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    return lines.slice(1).map(line => {
-        const vals = [];
-        let field = '', inQuote = false;
-        for (let c of line + ',') {
-            if (c === '"') inQuote = !inQuote;
-            else if (c === ',' && !inQuote) { vals.push(field); field = ''; }
-            else field += c;
-        }
+    const headers = lines[0].split(',').map(h=>h.trim());
+    return lines.slice(1).map(l=>{
+        const vals = l.split(',').map(v=>v.trim());
         const obj = {};
-        headers.forEach((h, i) => {
-            const v = vals[i] || '';
-            obj[h] = isNaN(v) || v === '' ? v : +v;
-        });
+        headers.forEach((h,i)=>obj[h]=isNaN(vals[i])?vals[i]:+vals[i]);
         return obj;
     });
 }
 
-// Load Data
-function loadData() {
-    allRows = parseCSV(CSV_DATA);
-    const agents = [...new Set(allRows.map(r => r['Operator Name']))].sort();
-    const select = document.getElementById('agentSelect');
-    select.innerHTML = '<option value="">-- Select Agent --</option>' +
-        agents.map(a => `<option value="${a}">${a}</option>`).join('');
-    updateStats();
+/* ---------- LOAD DATA ---------- */
+async function loadData(){
+    try{
+        const csv = await fetch(SHEET_URL).then(r=>r.text());
+        const rows = parseCSV(csv);
+        const today = new Date().toISOString().split('T')[0]; // 2025-11-11
+        todayRows = rows.filter(r=> (r['Date']||'').trim() === today);
+
+        // Populate agent dropdown
+        const agents = [...new Set(todayRows.map(r=>r['Operator Name']))].sort();
+        const select = document.getElementById('agentSelect');
+        select.innerHTML = '<option value="">-- Select Agent --</option>' + 
+            agents.map(a=>`<option value="${a}">${a}</option>`).join('');
+
+        // Fill bucket tables
+        const buckets = {
+            without: 'Without+Pre+Due Collection',
+            soft: 'Soft Collection',
+            medium: 'Medium Collection',
+            hard: 'Hard Collection',
+            restruct: 'Restruct Collection'
+        };
+        Object.entries(buckets).forEach(([key, col])=>{
+            const sorted = todayRows
+                .map(r=>({name:r['Operator Name'], amt:r[col]||0}))
+                .sort((a,b)=>b.amt-a.amt)
+                .slice(0,5);
+            const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
+            tbody.innerHTML = sorted.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
+        });
+
+        console.log('Live data loaded for', today);
+    }catch(e){
+        console.warn('Load failed',e);
+    }
 }
 
-// Update
-function updateStats() {
-    selectedAgent = document.getElementById('agentSelect').value;
-    selectedDate = document.getElementById('datePicker').value || '2025-11-11';
-    document.getElementById('targetBox').style.display = selectedAgent ? 'block' : 'none';
+/* ---------- TARGET SELECTION ---------- */
+let selectedTarget = localStorage.getItem('target') || null;
+document.querySelectorAll('.target-btn').forEach(btn=>{
+    btn.onclick = () => {
+        document.querySelectorAll('.target-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedTarget = btn.dataset.target;
+        localStorage.setItem('target', selectedTarget);
+        updateAgentStats();
+    };
+    if(btn.dataset.target === selectedTarget) btn.classList.add('selected');
+});
 
-    if (!selectedAgent) return;
-
-    const saved = localStorage.getItem(`target_${selectedAgent}`);
-    selectedTarget = saved ? +saved : 6000000;
-    document.querySelectorAll('.target-btn').forEach(b => {
-        b.classList.toggle('selected', +b.dataset.val === selectedTarget);
-    });
-
-    calculateStats();
-    updateBuckets();
+/* ---------- UI ---------- */
+function updateHeaderFooter(){
+    const now = new Date();
+    document.getElementById('monthYear').textContent = now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    const daysLeft = new Date(now.getFullYear(),now.getMonth()+1,0).getDate() - now.getDate() + 1;
+    const foot = document.getElementById('footerNote');
+    foot.innerHTML = `Updated: ${now.toLocaleDateString('en-GB')} ${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})} | Oncredit | <strong>${daysLeft} days left</strong>`;
 }
 
-// Calculate
-function calculateStats() {
-    const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
-    if (!row) return;
+function updateAgentStats(){
+    const name = document.getElementById('agentSelect').value;
+    if(!name || !selectedTarget) return;
 
+    const row = todayRows.find(r=>r['Operator Name']===name) || {};
     const ytd = row.Total || 0;
-    const deficit = selectedTarget - ytd;
-    const daysLeft = 20;
+    const today = row.Total || 0;
+    const target = +selectedTarget;
+    const deficit = target - ytd;
+    const daysLeft = new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate() - new Date().getDate() + 1;
     const dailyReq = deficit > 0 ? Math.ceil(deficit / daysLeft) : 0;
 
-    document.getElementById('target').textContent = formatLKR(selectedTarget);
+    document.getElementById('target').textContent = formatLKR(target);
     document.getElementById('collected').textContent = formatLKR(ytd);
-    document.getElementById('yesterdayCollected').textContent = formatLKR(0); // No yesterday data
-    const defEl = document.getElementById('deficit');
-    defEl.textContent = formatLKR(Math.abs(deficit));
-    defEl.className = deficit > 0 ? 'negative' : 'positive';
+    document.getElementById('todayCollected').textContent = formatLKR(today);
+    const def = document.getElementById('deficit');
+    def.textContent = formatLKR(deficit);
+    def.className = deficit > 0 ? 'negative' : 'positive';
     document.getElementById('daysLeft').textContent = daysLeft;
     document.getElementById('dailyRequired').textContent = formatLKR(dailyReq) + '/day';
     document.getElementById('callsToday').textContent = row['Call count'] || 0;
-    document.getElementById('bonus').textContent = formatLKR(row['Total Bonusses'] || 0);
+    document.getElementById('bonus').textContent = formatLKR(row.Bonusses || 0);
 
-    const pct = selectedTarget > 0 ? (ytd / selectedTarget) * 100 : 0;
-    const pctR = Math.min(Math.round(pct), 300);
+    // Progress
+    const pct = target > 0 ? (ytd / target) * 100 : 0;
+    const pctR = clamp(Math.round(pct), 0, 300);
     const fill = document.getElementById('progressFill');
     fill.style.width = Math.min(pctR, 100) + '%';
     document.getElementById('progressPercent').textContent = pctR + '%';
     document.getElementById('progressCaption').textContent = pctR + '% of target';
+    fill.style.background = pctR >= 100 ?
+        'linear-gradient(90deg,#2ecc71,#27ae60)' :
+        'linear-gradient(90deg,var(--primary),#2980b9)';
 }
 
-// Buckets
-function updateBuckets() {
-    const today = allRows.filter(r => r.Date === selectedDate);
-    const map = {
-        without: 'Without+Pre+Due Collection',
-        soft: 'Soft Collection',
-        medium: 'Medium Collection',
-        hard: 'Hard Collection',
-        restruct: 'Restruct Collection'
-    };
-    Object.entries(map).forEach(([k, col]) => {
-        const sorted = today.map(r => ({name: r['Operator Name'], amt: +(r[col] || 0)}))
-            .sort((a,b) => b.amt - a.amt).slice(0,5);
-        const tbody = document.querySelector(`#tbl${k.charAt(0).toUpperCase() + k.slice(1)} tbody`);
-        tbody.innerHTML = sorted.map((x,i) => `<tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>`).join('');
-    });
+function openTab(id){
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector(`.tab[onclick="openTab('${id}')"]`).classList.add('active');
+    if(id==='agent') updateAgentStats();
 }
 
-// Target
-document.querySelectorAll('.target-btn').forEach(b => {
-    b.onclick = () => {
-        document.querySelectorAll('.target-btn').forEach(x => x.classList.remove('selected'));
-        b.classList.add('selected');
-        selectedTarget = +b.dataset.val;
-        localStorage.setItem(`target_${selectedAgent}`, selectedTarget);
-        calculateStats();
-    };
+function clearSelection(){
+    document.getElementById('agentSelect').value='';
+    updateAgentStats();
+}
+
+/* ---------- THEME ---------- */
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(t){
+    document.body.setAttribute('data-theme',t);
+    themeToggle.innerHTML = t==='dark'?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';
+    localStorage.setItem('theme',t);
+}
+themeToggle.addEventListener('click',()=>{
+    const cur = document.body.getAttribute('data-theme')||'light';
+    applyTheme(cur==='dark'?'light':'dark');
 });
 
-// Tabs
-function openTab(id) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelector(`.tab[onclick="openTab('${id}')"]`).classList.add('active');
-    if (id === 'agent') calculateStats();
-}
-
-function clearSelection() {
-    document.getElementById('agentSelect').value = '';
-    document.getElementById('targetBox').style.display = 'none';
-}
-
-// Theme
-document.getElementById('themeToggle').onclick = () => {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-};
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    document.getElementById('footerNote').textContent = `Updated: 11/11/2025 01:22 PM | Oncredit | 20 days left`;
-    const theme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', theme);
+/* ---------- INIT ---------- */
+document.addEventListener('DOMContentLoaded',async()=>{
+    await loadData();
+    updateHeaderFooter();
+    const saved = localStorage.getItem('theme')||'light';
+    applyTheme(saved);
+    openTab('agent');
+    setInterval(loadData, 5*60*1000); // refresh every 5 min
 });
 </script>
 </body>
