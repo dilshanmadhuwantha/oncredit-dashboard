@@ -76,7 +76,7 @@ tr:hover{background:rgba(52,152,219,.1);}
     </div>
     <p class="subtitle">November 2025 | Live from Google Sheet</p>
 
-    <div id="loading">Loading latest data from Google Sheet...</div>
+    <div id="loading">Loading data from Google Sheet...</div>
 
     <div class="controls">
         <select id="agentSelect" onchange="updateStats()">
@@ -112,11 +112,11 @@ tr:hover{background:rgba(52,152,219,.1);}
         <div class="stats-grid">
             <div class="stat-card"><h3>Monthly Target</h3><p id="target" class="info">-</p></div>
             <div class="stat-card"><h3>Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
-            <div class="stat-card"><h3>Yesterday's Collection</h3><p id="yesterdayCollected" class="positive">-</p></div>
             <div class="stat-card"><h3>Deficit</h3><p id="deficit" class="negative">-</p></div>
             <div class="stat-card"><h3>Days Left</h3><p id="daysLeft" class="info">-</p></div>
             <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
             <div class="stat-card"><h3>Calls Today</h3><p id="callsToday" class="info">-</p></div>
+            <div class="stat-card"><h3>New Loan Count</h3><p id="newLoans" class="info">-</p></div>
             <div class="stat-card"><h3>Bonus</h3><p id="bonus" class="positive">-</p></div>
         </div>
 
@@ -143,8 +143,8 @@ tr:hover{background:rgba(52,152,219,.1);}
 </div>
 
 <script>
-// === YOUR GOOGLE SHEET CSV LINK (MUST END WITH &output=csv) ===
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv";
+// === YOUR PUBLISHED CSV LINK (ENTIRE DOCUMENT) ===
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv";
 
 let allRows = [];
 let selectedAgent = '';
@@ -156,7 +156,7 @@ function formatLKR(n) {
     return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
 }
 
-// Parse CSV (robust)
+// Parse CSV
 function parseCSV(text) {
     const lines = text.trim().split('\n');
     const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
@@ -181,7 +181,7 @@ function parseCSV(text) {
     return rows;
 }
 
-// Fetch Data from Google Sheet
+// Fetch Data
 async function fetchData() {
     document.getElementById('loading').style.display = 'block';
     try {
@@ -189,17 +189,17 @@ async function fetchData() {
         if (!resp.ok) throw new Error('Network error');
         const text = await resp.text();
         allRows = parseCSV(text);
-        console.log('Loaded', allRows.length, 'rows from Google Sheet');
+        console.log('Loaded', allRows.length, 'rows');
         populateFilters();
         document.getElementById('loading').style.display = 'none';
     } catch (e) {
         console.error(e);
-        alert('Failed to load data. Check CSV link or internet.');
+        alert('Failed to load data. Check CSV link.');
         document.getElementById('loading').style.display = 'none';
     }
 }
 
-// Populate Agent & Date Dropdowns
+// Populate Filters
 function populateFilters() {
     const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
     const dates = [...new Set(allRows.map(r => r['Date']))].filter(Boolean).sort().reverse();
@@ -246,6 +246,7 @@ function clearStats() {
     document.getElementById('deficit').textContent = '-';
     document.getElementById('dailyRequired').textContent = '-';
     document.getElementById('callsToday').textContent = '-';
+    document.getElementById('newLoans').textContent = '-';
     document.getElementById('bonus').textContent = '-';
     document.getElementById('progressFill').style.width = '0%';
     document.getElementById('progressPercent').textContent = '0%';
@@ -263,19 +264,20 @@ function calculateStats() {
     const ytd = row.Collected || 0;
     const bonus = row['Total Bonusses'] || 0;
     const calls = row['Call count'] || 0;
+    const newLoans = row['New loan count'] || 0;
     const deficit = selectedTarget - ytd;
     const daysLeft = 20;
     const dailyReq = deficit > 0 ? Math.ceil(deficit / daysLeft) : 0;
 
     document.getElementById('target').textContent = formatLKR(selectedTarget);
     document.getElementById('collected').textContent = formatLKR(ytd);
-    document.getElementById('yesterdayCollected').textContent = 'LKR 0';
     const defEl = document.getElementById('deficit');
     defEl.textContent = formatLKR(Math.abs(deficit));
     defEl.className = deficit > 0 ? 'negative' : 'positive';
     document.getElementById('daysLeft').textContent = daysLeft;
     document.getElementById('dailyRequired').textContent = formatLKR(dailyReq) + '/day';
     document.getElementById('callsToday').textContent = calls;
+    document.getElementById('newLoans').textContent = newLoans;
     document.getElementById('bonus').textContent = formatLKR(bonus);
 
     const pct = selectedTarget > 0 ? (ytd / selectedTarget) * 100 : 0;
