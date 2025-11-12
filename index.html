@@ -129,7 +129,7 @@ tr:hover{background:rgba(67,97,238,.05);}
     font-size:1.3rem;font-weight:700;color:var(--primary);margin-bottom:8px;
     opacity:0;transform:translateY(20px);transition:all .8s ease;
 }
-.quote-text.active{opacity:1;transform:translateY(20px);}
+.quote-text.active{opacity:1;transform:translateY(0);}
 .quote-author{
     font-size:.95rem;color:#94a3b8;font-style:italic;opacity:0;transform:translateY(20px);
     transition:all .8s ease .3s;
@@ -203,7 +203,7 @@ tr:hover{background:rgba(67,97,238,.05);}
             <div class="stat-card"><h3>Deficit</h3><p id="deficit" class="negative">-</p></div>
             <div class="stat-card"><h3>Days Left</h3><p id="daysLeft" class="info">-</p></div>
             <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
-            <div class="stat-card"><h3>Calls Total</h3><p id="callsTotal" class="info">-</p></div>
+            <div class="stat-card"><h3>Calls Today</h3><p id="callsToday" class="info">-</p></div>
             <div class="stat-card"><h3>New Loan Count</h3><p id="newLoans" class="info">-</p></div>
             <div class="stat-card"><h3>Bonus</h3><p id="bonus" class="positive">-</p></div>
         </div>
@@ -231,6 +231,7 @@ tr:hover{background:rgba(67,97,238,.05);}
 </div>
 
 <script>
+// YOUR CSV LINK – MUST BE PUBLISHED AS CSV
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv";
 
 let allRows = [];
@@ -314,15 +315,16 @@ async function fetchData() {
 
     try {
         const resp = await fetch(CSV_URL + '&_=' + Date.now());
-        if (!resp.ok) throw new Error();
+        if (!resp.ok) throw new Error('Network error');
         const text = await resp.text();
+        if (text.includes('<title>Error</title>')) throw new Error('CSV not published');
         allRows = parseCSV(text);
         populateFilters();
         loading.style.display = 'none';
     } catch (e) {
         loading.style.display = 'none';
         error.style.display = 'block';
-        error.innerHTML = `Failed. <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">Fix CSV Publish</a>`;
+        error.innerHTML = `Failed to load data. <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">Publish as CSV</a>`;
     }
 }
 
@@ -377,7 +379,7 @@ function clearStats() {
 
 function calculateStats() {
     const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
-    if (!row) { alert('No data'); return; }
+    if (!row) { alert('No data for this agent/date'); return; }
 
     const ytd = parseNumber(row['Paid amount']);
     const bonus = parseNumber(row['Total Bonusses']);
@@ -408,7 +410,13 @@ function calculateStats() {
 
 function updateBuckets() {
     const today = allRows.filter(r => r.Date === selectedDate);
-    const buckets = { without: 'Without+Pre+Due Collection', soft: 'Soft Collection', medium: 'Medium Collection', hard: 'Hard Collection', restruct: 'Restruct Collection' };
+    const buckets = { 
+        without: 'Without+Pre+Due Collection', 
+        soft: 'Soft Collection', 
+        medium: 'Medium Collection', 
+        hard: 'Hard Collection', 
+        restruct: 'Restruct Collection' 
+    };
 
     Object.entries(buckets).forEach(([key, col]) => {
         const sorted = today.map(r => ({ name: r['Operator Name'], amt: parseNumber(r[col]) }))
@@ -462,4 +470,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
