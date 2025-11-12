@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oncredit – Agent Dashboard</title>
+<title>Oncredit Dashboard – Live from Google Sheet</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
 <style>
 :root{
@@ -16,152 +16,114 @@
     --primary:#5dade2;--pos:#2ecc71;--neg:#e74c3c;--warn:#f39c12;--info:#3498db;
     --shadow:0 3px 10px rgba(0,0,0,.3);
 }
-* {margin:0;padding:0;box-sizing:border-box;}
-body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
-.container {max-width:1000px;margin:auto;}
-.header {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
-h1 {color:var(--primary);font-size:1.8rem;}
-.subtitle {color:#7f8c8d;font-size:0.92rem;margin-bottom:18px;text-align:center;}
-
-.dropdown-container {text-align:center;margin:16px 0 6px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-#agentSelect {padding:12px 16px;font-size:16px;width:360px;max-width:100%;border:1px solid #3498db;border-radius:10px;background:white;color:#2c3e50;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
-.btn {padding:12px 16px;font-size:14px;border-radius:10px;border:1px solid #d0d7de;background:#fff;cursor:pointer;transition:0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-.btn:hover {transform:translateY(-1px);}
-.btn-clear {border-color:#e7e9ec;}
-
-.tabs {display:flex;justify-content:center;margin:18px 0 10px;border-bottom:1px solid #e6e8eb;flex-wrap:wrap;}
-.tab {padding:10px 18px;cursor:pointer;font-weight:600;color:#7f8c8d;border-bottom:3px solid transparent;transition:all 0.25s;margin:0 5px;}
-.tab.active {color:#3498db;border-bottom:3px solid #3498db;}
-
-.tab-content {display:none;padding:18px 0;}
-.tab-content.active {display:block;}
-
-.stats-grid {display:grid;grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));gap:15px;margin:16px 0 6px;}
-.stat-card {background:white;padding:16px;border-radius:12px;text-align:center;box-shadow:0 3px 10px rgba(0,0,0,0.08);transition:transform 0.2s;}
-.stat-card:hover {transform:translateY(-3px);}
-.stat-card h3 {font-size:0.84rem;color:#7f8c8d;margin-bottom:8px;}
-.stat-card p {font-size:1.22rem;font-weight:bold;margin:0;}
-.positive {color:#27ae60;}
-.negative {color:#e74c3c;}
-.info {color:#2980b9;}
-.warning {color:#e67e22;}
-
-.progress-wrap {background:white;border-radius:12px;padding:14px;box-shadow:0 3px 10px rgba(0,0,0,0.08);}
-.progress-row {display:flex;align-items:center;gap:12px;margin-top:6px;}
-.progress-bar {flex:1;height:12px;background:#ecf0f1;border-radius:999px;overflow:hidden;}
-.progress-fill {height:100%;width:0%;background:linear-gradient(90deg,#34a4db,#3498db);border-radius:999px;transition:width 0.7s ease;}
-.progress-percent {min-width:64px;text-align:right;font-weight:600;font-size:0.92rem;color:#2c3e50;}
-
-.bucket-section {background:white;padding:18px;border-radius:12px;margin-bottom:20px;box-shadow:0 3px 10px rgba(0,0,0,0.08);}
-.bucket-title {font-size:1.08rem;font-weight:600;color:#2c3e50;margin-bottom:12px;text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;}
-
-table {width:100%;border-collapse:collapse;font-size:0.92rem;}
-th {background:#3498db;color:white;padding:10px;text-align:center;}
-td {padding:10px;text-align:center;border-bottom:1px solid #eee;}
-tr:hover {background:#f8f9fa;}
-.amount {font-weight:600;color:#27ae60;}
-
-.footer {text-align:center;margin-top:20px;color:#95a5a6;font-size:0.8rem;}
-
-@media (max-width:600px){
-    .tabs{justify-content:flex-start; overflow-x:auto;}
-    #agentSelect{width:100%;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:20px;transition:all .3s;}
+.container{max-width:1000px;margin:auto;}
+.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
+h1{color:var(--primary);font-size:1.8rem;}
+.subtitle{color:#7f8c8d;font-size:.92rem;margin-bottom:18px;text-align:center;}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 6px;}
+#agentSelect, #datePicker{padding:12px 16px;font-size:16px;width:300px;max-width:100%;border:1px solid var(--primary);border-radius:10px;background:var(--card);color:var(--text);box-shadow:var(--shadow);}
+.btn{padding:10px 16px;font-size:14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:.2s;box-shadow:var(--shadow);}
+.btn:hover{transform:translateY(-1px);background:var(--primary);color:#fff;}
+.target-btn{background:var(--primary);color:#fff;font-weight:bold;margin:4px;border-radius:30px;padding:8px 16px;}
+.target-btn.selected{background:var(--pos);border-color:var(--pos);}
+.mode-toggle{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text);}
+.tabs{display:flex;justify-content:center;margin:18px 0 10px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.tab{padding:10px 18px;cursor:pointer;font-weight:600;color:#7f8c8d;border-bottom:3px solid transparent;transition:.25s;margin:0 5px;}
+.tab.active{color:var(--primary);border-bottom:3px solid var(--primary);}
+.tab-content{display:none;padding:18px 0;}
+.tab-content.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px;margin:16px 0 6px;}
+.stat-card{background:var(--card);padding:16px;border-radius:12px;text-align:center;box-shadow:var(--shadow);transition:transform .2s;}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-card h3{font-size:.84rem;color:#7f8c8d;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.stat-card p{font-size:1.22rem;font-weight:bold;margin:0;}
+.positive{color:var(--pos);}
+.negative{color:var(--neg);}
+.info{color:var(--info);}
+.warning{color:var(--warn);}
+.progress-wrap{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
+.progress-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+.progress-bar{flex:1;height:12px;background:#ecf0f1;border-radius:999px;overflow:hidden;}
+[data-theme="dark"] .progress-bar{background:#3a3a3a;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),#2980b9);border-radius:999px;transition:width .7s ease;}
+.progress-percent{min-width:64px;text-align:right;font-weight:600;font-size:.92rem;color:var(--text);}
+.bucket-section{background:var(--card);padding:18px;border-radius:12px;margin-bottom:20px;box-shadow:var(--shadow);}
+.bucket-title{font-size:1.08rem;font-weight:600;color:var(--text);margin-bottom:12px;text-align:center;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:center;gap:8px;}
+table{width:100%;border-collapse:collapse;font-size:.92rem;}
+th{background:var(--primary);color:#fff;padding:10px;text-align:center;}
+td{padding:10px;text-align:center;border-bottom:1px solid var(--border);}
+tr:hover{background:rgba(52,152,219,.1);}
+[data-theme="dark"] tr:hover{background:rgba(52,152,219,.2);}
+.amount{font-weight:600;color:var(--pos);}
+.footer{text-align:center;margin-top:20px;color:#95a5a6;font-size:.8rem;}
+.target-selection{margin:12px 0;text-align:center;}
+#loading{display:none;text-align:center;color:var(--primary);font-weight:600;margin:20px;}
+@media(max-width:600px){
+    .header{flex-direction:column;text-align:center;}
+    .controls{flex-direction:column;}
+    #agentSelect,#datePicker{width:100%;}
     .stats-grid{grid-template-columns:1fr 1fr;}
-    .progress-percent{min-width:52px; font-size:0.86rem;}
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>Oncredit Dashboard</h1>
-    <p class="subtitle">November 2025 | Select Agent to View Performance</p>
+    <div class="header">
+        <h1>Oncredit Dashboard</h1>
+        <button id="themeToggle" class="mode-toggle"><i class="fas fa-moon"></i></button>
+    </div>
+    <p class="subtitle">November 2025 | Live from Google Sheet</p>
 
-    <!-- Controls -->
-    <div class="dropdown-container">
-        <select id="agentSelect" aria-label="Select Agent" onchange="updateAgentStats()">
+    <div id="loading">Loading latest data...</div>
+
+    <div class="controls">
+        <select id="agentSelect" onchange="updateStats()">
             <option value="">-- Select Agent --</option>
-            <option value="Chathura Kosala">Chathura Kosala (6,000,000.00)</option>
-            <option value="Eshan Shashika">Eshan Shashika (6,000,000.00)</option>
-            <option value="Sandali Nisansala">Sandali Nisansala (6,000,000.00)</option>
-            <option value="Preeni Sanoja">Preeni Sanoja (7,000,000.00)</option>
-            <option value="Sandeepa Lakruwan">Sandeepa Lakruwan (6,000,000.00)</option>
-            <option value="Sasantha Udesh">Sasantha Udesh (6,000,000.00)</option>
-            <option value="Raveesha Nethmini">Raveesha Nethmini (6,000,000.00)</option>
-            <option value="Maleesha Kalhara">Maleesha Kalhara (6,000,000.00)</option>
-            <option value="Ruchini Navanjana">Ruchini Navanjana (6,000,000.00)</option>
-            <option value="Pavithra Thangarajah">Pavithra Thangarajah (7,000,000.00)</option>
-            <option value="Kalindu Sachith">Kalindu Sachith (6,000,000.00)</option>
-            <option value="Lehan Hansaja">Lehan Hansaja (6,000,000.00)</option>
-            <option value="Venura Lakshitha">Venura Lakshitha (6,000,000.00)</option>
-            <option value="Ishani Saraswathy">Ishani Saraswathy (6,000,000.00)</option>
-            <option value="Gihan Pamodh">Gihan Pamodh (6,000,000.00)</option>
-            <option value="Nipun Sudharaka">Nipun Sudharaka (6,000,000.00)</option>
-            <option value="Chathurangi Baddevithana">Chathurangi Baddevithana (6,000,000.00)</option>
-            <option value="Harith Shenun">Harith Shenun (6,000,000.00)</option>
-            <option value="Thanusha Deshani">Thanusha Deshani (6,000,000.00)</option>
-            <option value="Iresha Dilhani">Iresha Dilhani (7,000,000.00)</option>
-            <option value="Naduni Kaveesha">Naduni Kaveesha (6,000,000.00)</option>
-            <option value="Thilina Hashan">Thilina Hashan (6,000,000.00)</option>
-            <option value="Chanthuka Malisha">Chanthuka Malisha (6,000,000.00)</option>
-            <option value="Chathuni Vimarsha">Chathuni Vimarsha (6,000,000.00)</option>
-            <option value="Prarthana Dewmini">Prarthana Dewmini (6,000,000.00)</option>
-            <option value="Lakshan Perera">Lakshan Perera (6,000,000.00)</option>
-            <option value="Varuni Lakshani">Varuni Lakshani (6,000,000.00)</option>
-            <option value="Malinda Chathuranga">Malinda Chathuranga (6,000,000.00)</option>
-            <option value="Sanduni Kaushalya">Sanduni Kaushalya (6,000,000.00)</option>
-            <option value="Anthony Trevin">Anthony Trevin (6,000,000.00)</option>
-            <option value="Asanka Nash">Asanka Nash (6,000,000.00)</option>
-            <option value="Hasini Pituwala">Hasini Pituwala (6,000,000.00)</option>
-            <option value="Sanduni Rupika">Sanduni Rupika (6,000,000.00)</option>
-            <option value="Dinusha Dasanayaka">Dinusha Dasanayaka (6,000,000.00)</option>
-            <option value="Ishara Maduwanthi">Ishara Maduwanthi (6,000,000.00)</option>
-            <option value="Vihaga Makumbura">Vihaga Makumbura (6,000,000.00)</option>
-            <option value="Chamilka Oshadha">Chamilka Oshadha (6,000,000.00)</option>
-            <option value="Niroshan Buddika">Niroshan Buddika (6,000,000.00)</option>
-            <option value="Thanoj Vishman">Thanoj Vishman (6,000,000.00)</option>
-            <option value="Dulan Charuka">Dulan Charuka (6,000,000.00)</option>
-            <option value="Kavindu Kalhara">Kavindu Kalhara (6,000,000.00)</option>
-            <option value="Suresh Jadeesha">Suresh Jadeesha (7,000,000.00)</option>
-            <option value="Amandi Upeksha">Amandi Upeksha (6,000,000.00)</option>
-            <option value="Pasindu Premalal">Pasindu Premalal (6,000,000.00)</option>
-            <option value="Methdinu Jayasinhe">Methdinu Jayasinhe (6,000,000.00)</option>
-            <option value="Ranula Sheron">Ranula Sheron (6,000,000.00)</option>
-            <option value="Heshan Kalhara">Heshan Kalhara (6,000,000.00)</option>
-            <option value="Nipuni Weerakoon">Nipuni Weerakoon (6,000,000.00)</option>
-            <option value="Imalsha Perera">Imalsha Perera (6,000,000.00)</option>
-            <option value="Dinura Thamuditha">Dinura Thamuditha (6,000,000.00)</option>
-            <option value="Avishka Shalinda">Avishka Shalinda (6,000,000.00)</option>
         </select>
-        <button class="btn btn-clear" onclick="clearSelection()">Clear</button>
+        <select id="datePicker" onchange="updateStats()">
+            <option value="">-- Select Date --</option>
+        </select>
+        <button class="btn" onclick="clearSelection()">Clear</button>
+        <button class="btn" onclick="fetchData()">Refresh Data</button>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs" role="tablist" aria-label="Buckets">
-        <div class="tab active" role="tab" aria-selected="true" onclick="openTab('agent')">Agent Stats</div>
-        <div class="tab" role="tab" aria-selected="false" onclick="openTab('without')">Without+Pre+Due</div>
-        <div class="tab" role="tab" aria-selected="false" onclick="openTab('soft')">Soft Bucket</div>
-        <div class="tab" role="tab" aria-selected="false" onclick="openTab('medium')">Medium Bucket</div>
-        <div class="tab" role="tab" aria-selected="false" onclick="openTab('hard')">Hard Bucket</div>
-        <div class="tab" role="tab" aria-selected="false" onclick="openTab('restruct')">Restruct Bucket</div>
+    <div class="target-selection" id="targetBox" style="display:none;">
+        <strong>Select Monthly Target:</strong><br>
+        <button class="btn target-btn" data-val="6000000">6Mn</button>
+        <button class="btn target-btn" data-val="7000000">7Mn</button>
+        <button class="btn target-btn" data-val="8000000">8Mn</button>
+        <button class="btn target-btn" data-val="9000000">9Mn</button>
+        <button class="btn target-btn" data-val="10000000">10Mn</button>
     </div>
 
-    <!-- Agent Stats -->
+    <div class="tabs">
+        <div class="tab active" onclick="openTab('agent')">Agent Stats</div>
+        <div class="tab" onclick="openTab('without')">Without+Pre+Due</div>
+        <div class="tab" onclick="openTab('soft')">Soft</div>
+        <div class="tab" onclick="openTab('medium')">Medium</div>
+        <div class="tab" onclick="openTab('hard')">Hard</div>
+        <div class="tab" onclick="openTab('restruct')">Restruct</div>
+    </div>
+
+    <!-- AGENT STATS -->
     <div id="agent" class="tab-content active">
         <div class="stats-grid">
-            <div class="stat-card"><h3>Monthly Target</h3><p id="target" class="info">LKR 6,000,000</p></div>
-            <div class="stat-card"><h3>Collected (YTD)</h3><p id="collected" class="positive">LKR 0</p></div>
-            <div class="stat-card"><h3>Deficit to Target</h3><p id="deficit" class="negative">LKR 0</p></div>
-            <div class="stat-card"><h3>Days Left (incl. today)</h3><p id="daysLeft" class="info">20</p></div>
-            <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">LKR 0/day</p></div>
-            <div class="stat-card"><h3>Calls (1–10 Nov)</h3><p id="calls" class="info">0</p></div>
-            <div class="stat-card"><h3>Avg Calls/Day</h3><p id="avgCalls" class="info">0.0</p></div>
-            <div class="stat-card"><h3>Bucket Bonus</h3><p id="bonus" class="positive">LKR 0</p></div>
+            <div class="stat-card"><h3>Monthly Target</h3><p id="target" class="info">-</p></div>
+            <div class="stat-card"><h3>Collected (YTD)</h3><p id="collected" class="positive">-</p></div>
+            <div class="stat-card"><h3>Yesterday's Collection</h3><p id="yesterdayCollected" class="positive">-</p></div>
+            <div class="stat-card"><h3>Deficit</h3><p id="deficit" class="negative">-</p></div>
+            <div class="stat-card"><h3>Days Left</h3><p id="daysLeft" class="info">-</p></div>
+            <div class="stat-card"><h3>Required Daily Avg</h3><p id="dailyRequired" class="warning">-</p></div>
+            <div class="stat-card"><h3>Calls Today</h3><p id="callsToday" class="info">-</p></div>
+            <div class="stat-card"><h3>Bonus</h3><p id="bonus" class="positive">-</p></div>
         </div>
 
-        <div class="progress-wrap" aria-label="Progress to monthly target">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div class="progress-wrap">
+            <div style="display:flex;justify-content:space-between;">
                 <strong>Progress to Target</strong>
-                <small id="progressCaption" style="color:#7f8c8d;">0% of target</small>
+                <small id="progressCaption">0% of target</small>
             </div>
             <div class="progress-row">
                 <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
@@ -170,255 +132,210 @@ tr:hover {background:#f8f9fa;}
         </div>
     </div>
 
-    <!-- Bucket Top-5 -->
-    <div id="without" class="tab-content">
-        <div class="bucket-section">
-            <div class="bucket-title">Top 5 - Without + Pre + Due Bucket</div>
-            <table>
-                <thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Eshan Shashika</td><td class="amount">LKR 2,401,084</td></tr>
-                    <tr><td>2</td><td>Chathura Kosala</td><td class="amount">LKR 2,332,236</td></tr>
-                    <tr><td>3</td><td>Preeni Sanoja</td><td class="amount">LKR 2,276,512</td></tr>
-                    <tr><td>4</td><td>Sasantha Udesh</td><td class="amount">LKR 2,269,935</td></tr>
-                    <tr><td>5</td><td>Raveesha Nethmini</td><td class="amount">LKR 2,134,800</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- BUCKETS -->
+    <div id="without" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Without+Pre+Due</div><table id="tblWithout"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="soft" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Soft</div><table id="tblSoft"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="medium" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Medium</div><table id="tblMedium"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="hard" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Hard</div><table id="tblHard"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
+    <div id="restruct" class="tab-content"><div class="bucket-section"><div class="bucket-title">Top 5 – Restruct</div><table id="tblRestruct"><thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead><tbody></tbody></table></div></div>
 
-    <div id="soft" class="tab-content">
-        <div class="bucket-section">
-            <div class="bucket-title">Top 5 - Soft Bucket</div>
-            <table>
-                <thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Sandali Nisansala</td><td class="amount">LKR 765,720</td></tr>
-                    <tr><td>2</td><td>Ruchini Navanjana</td><td class="amount">LKR 694,742</td></tr>
-                    <tr><td>3</td><td>Niroshan Buddika</td><td class="amount">LKR 646,800</td></tr>
-                    <tr><td>4</td><td>Lehan Hansaja</td><td class="amount">LKR 571,395</td></tr>
-                    <tr><td>5</td><td>Sandeepa Lakruwan</td><td class="amount">LKR 535,952</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="medium" class="tab-content">
-        <div class="bucket-section">
-            <div class="bucket-title">Top 5 - Medium Bucket</div>
-            <table>
-                <thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Dulan Charuka</td><td class="amount">LKR 77,000</td></tr>
-                    <tr><td>2</td><td>Thanusha Deshani</td><td class="amount">LKR 62,200</td></tr>
-                    <tr><td>3</td><td>Asanka Nash</td><td class="amount">LKR 60,700</td></tr>
-                    <tr><td>4</td><td>Nipun Sudharaka</td><td class="amount">LKR 35,000</td></tr>
-                    <tr><td>5</td><td>Ishani Saraswathy</td><td class="amount">LKR 32,600</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="hard" class="tab-content">
-        <div class="bucket-section">
-            <div class="bucket-title">Top 5 - Hard Bucket</div>
-            <table>
-                <thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Asanka Nash</td><td class="amount">LKR 143,000</td></tr>
-                    <tr><td>2</td><td>Thanusha Deshani</td><td class="amount">LKR 108,300</td></tr>
-                    <tr><td>3</td><td>Sandali Nisansala</td><td class="amount">LKR 125,000</td></tr>
-                    <tr><td>4</td><td>Sandeepa Lakruwan</td><td class="amount">LKR 102,000</td></tr>
-                    <tr><td>5</td><td>Prarthana Dewmini</td><td class="amount">LKR 80,000</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="restruct" class="tab-content">
-        <div class="bucket-section">
-            <div class="bucket-title">Top 5 - Restruct Bucket</div>
-            <table>
-                <thead><tr><th>Rank</th><th>Agent</th><th>Collected</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Venura Lakshitha</td><td class="amount">LKR 5,000</td></tr>
-                    <tr><td>2</td><td>Chanthuka Malisha</td><td class="amount">LKR 5,000</td></tr>
-                    <tr><td>3</td><td>Lakshan Perera</td><td class="amount">LKR 4,500</td></tr>
-                    <tr><td>4</td><td>Pavithra Thangarajah</td><td class="amount">LKR 2,500</td></tr>
-                    <tr><td>5</td><td>Ishara Maduwanthi</td><td class="amount">LKR 2,100</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="footer" id="footerNote">
-        Updated: 11 Nov 2025, 10:55 AM | Oncredit Collections | <strong>20 working days left in Nov (incl. today)</strong>
-    </div>
+    <div class="footer" id="footerNote"></div>
 </div>
 
 <script>
-// ---------- DATA ----------
-const agentData = {
-  "Chathura Kosala": { target: 6000000, collected: 2843105, calls: 1322, bonus: 29761 },
-  "Eshan Shashika": { target: 6000000, collected: 2772654, calls: 1556, bonus: 27909 },
-  "Sandali Nisansala": { target: 6000000, collected: 2736445, calls: 1446, bonus: 170889 },
-  "Preeni Sanoja": { target: 7000000, collected: 2694963, calls: 1548, bonus: 19241 },
-  "Sandeepa Lakruwan": { target: 6000000, collected: 2468173, calls: 1716, bonus: 27866 },
-  "Sasantha Udesh": { target: 6000000, collected: 2439180, calls: 1456, bonus: 18783 },
-  "Raveesha Nethmini": { target: 6000000, collected: 2414763, calls: 1459, bonus: 9380 },
-  "Maleesha Kalhara": { target: 6000000, collected: 2350421, calls: 1519, bonus: 3552 },
-  "Ruchini Navanjana": { target: 6000000, collected: 2307533, calls: 1586, bonus: 119010 },
-  "Pavithra Thangarajah": { target: 7000000, collected: 2238049, calls: 945, bonus: 58 },
-  "Kalindu Sachith": { target: 6000000, collected: 2184012, calls: 1845, bonus: 0 },
-  "Lehan Hansaja": { target: 6000000, collected: 2164362, calls: 1032, bonus: 43631 },
-  "Venura Lakshitha": { target: 6000000, collected: 2136137, calls: 1542, bonus: 115 },
-  "Ishani Saraswathy": { target: 6000000, collected: 2135277, calls: 1897, bonus: 0 },
-  "Gihan Pamodh": { target: 6000000, collected: 2123335, calls: 1300, bonus: 0 },
-  "Nipun Sudharaka": { target: 6000000, collected: 2031258, calls: 1524, bonus: 0 },
-  "Chathurangi Baddevithana": { target: 6000000, collected: 2006545, calls: 1790, bonus: 0 },
-  "Harith Shenun": { target: 6000000, collected: 1972924, calls: 1519, bonus: 0 },
-  "Thanusha Deshani": { target: 6000000, collected: 1915198, calls: 1298, bonus: 6610 },
-  "Iresha Dilhani": { target: 7000000, collected: 1913899, calls: 1020, bonus: 0 },
-  "Naduni Kaveesha": { target: 6000000, collected: 1910316, calls: 1182, bonus: 0 },
-  "Thilina Hashan": { target: 6000000, collected: 1890485, calls: 1159, bonus: 0 },
-  "Chanthuka Malisha": { target: 6000000, collected: 1847340, calls: 1340, bonus: 115 },
-  "Chathuni Vimarsha": { target: 6000000, collected: 1825469, calls: 1482, bonus: 0 },
-  "Prarthana Dewmini": { target: 6000000, collected: 1818660, calls: 1032, bonus: 3401 },
-  "Lakshan Perera": { target: 6000000, collected: 1790969, calls: 1639, bonus: 104 },
-  "Varuni Lakshani": { target: 6000000, collected: 1739881, calls: 1223, bonus: 0 },
-  "Malinda Chathuranga": { target: 6000000, collected: 1738992, calls: 1252, bonus: 0 },
-  "Sanduni Kaushalya": { target: 6000000, collected: 1729123, calls: 1305, bonus: 0 },
-  "Anthony Trevin": { target: 6000000, collected: 1721348, calls: 1610, bonus: 0 },
-  "Asanka Nash": { target: 6000000, collected: 1704332, calls: 1167, bonus: 10544 },
-  "Hasini Pituwala": { target: 6000000, collected: 1694267, calls: 1855, bonus: 0 },
-  "Sanduni Rupika": { target: 6000000, collected: 1681048, calls: 1566, bonus: 0 },
-  "Dinusha Dasanayaka": { target: 6000000, collected: 1658935, calls: 1566, bonus: 0 },
-  "Ishara Maduwanthi": { target: 6000000, collected: 1645152, calls: 1741, bonus: 48 },
-  "Vihaga Makumbura": { target: 6000000, collected: 1634840, calls: 1288, bonus: 0 },
-  "Chamilka Oshadha": { target: 6000000, collected: 1625369, calls: 1255, bonus: 0 },
-  "Niroshan Buddika": { target: 6000000, collected: 1557604, calls: 1557, bonus: 89712 },
-  "Thanoj Vishman": { target: 6000000, collected: 1552856, calls: 1332, bonus: 0 },
-  "Dulan Charuka": { target: 6000000, collected: 1505811, calls: 1337, bonus: 0 },
-  "Kavindu Kalhara": { target: 6000000, collected: 1473927, calls: 1338, bonus: 16714 },
-  "Suresh Jadeesha": { target: 7000000, collected: 1466008, calls: 720, bonus: 0 },
-  "Amandi Upeksha": { target: 6000000, collected: 1401588, calls: 1490, bonus: 0 },
-  "Pasindu Premalal": { target: 6000000, collected: 1383886, calls: 742, bonus: 0 },
-  "Methdinu Jayasinhe": { target: 6000000, collected: 1383396, calls: 1033, bonus: 0 },
-  "Ranula Sheron": { target: 6000000, collected: 1354453, calls: 1316, bonus: 0 },
-  "Heshan Kalhara": { target: 6000000, collected: 1301085, calls: 1260, bonus: 0 },
-  "Nipuni Weerakoon": { target: 6000000, collected: 1243816, calls: 1446, bonus: 0 },
-  "Imalsha Perera": { target: 6000000, collected: 1222975, calls: 951, bonus: 0 },
-  "Dinura Thamuditha": { target: 6000000, collected: 901763, calls: 1376, bonus: 0 },
-  "Avishka Shalinda": { target: 6000000, collected: 834103, calls: 1220, bonus: 46 }
-};
+// === UPDATE THIS LINK ONLY ===
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pubhtml?gid=1099036482&single=true"; // ← PASTE YOUR LINK HERE
 
-// ---------- HELPERS ----------
-const DAYS_FOR_CALLS = 10;               
-let DAYS_LEFT_INCLUDING_TODAY = 20;           
+let allRows = [];
+let selectedAgent = '';
+let selectedDate = '';
+let selectedTarget = 6000000;
 
-function formatLKR(n){ return "LKR " + Number(n||0).toLocaleString('en-LK',{maximumFractionDigits:0}); }
-function clamp(min,v,max){ return Math.max(min,Math.min(v,max)); }
-
-function daysLeftInMonthInclusive(d=new Date()){
-    const y=d.getFullYear(), m=d.getMonth();
-    const last = new Date(y,m+1,0).getDate();
-    return last - d.getDate() + 1;
-}
-function updateFooterAndHeaderDates(){
-    const now = new Date();
-    const month = now.toLocaleDateString(undefined,{month:'long'});
-    const year = now.getFullYear();
-    document.getElementById('monthYear').textContent = `${month} ${year}`;
-
-    DAYS_LEFT_INCLUDING_TODAY = daysLeftInMonthInclusive(now);
-    const timeStr = now.toLocaleString(undefined,{
-        day:'2-digit', month:'short', year:'numeric',
-        hour:'2-digit', minute:'2-digit'
-    });
-    const foot = document.getElementById('footerNote');
-    foot.innerHTML = `Updated: ${timeStr} | Oncredit Collections | <strong>${DAYS_LEFT_INCLUDING_TODAY} days left in ${month} (incl. today)</strong>`;
+// Format LKR
+function formatLKR(n) {
+    return "LKR " + Number(n || 0).toLocaleString('en-LK', { maximumFractionDigits: 0 });
 }
 
-// ---------- UI LOGIC ----------
-function updateAgentStats(){
-    const name = document.getElementById('agentSelect').value;
-    if(!name||!agentData[name]) return;
+// Parse CSV
+function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        const values = [];
+        let field = '', inQuote = false;
+        for (let char of lines[i] + ',') {
+            if (char === '"') inQuote = !inQuote;
+            else if (char === ',' && !inQuote) { values.push(field.trim()); field = ''; }
+            else field += char;
+        }
+        if (values.length < headers.length) continue;
+        const obj = {};
+        headers.forEach((h, idx) => {
+            let val = values[idx] || '';
+            val = val.replace(/"/g, '').trim();
+            obj[h] = isNaN(val) || val === '' ? val : Number(val);
+        });
+        rows.push(obj);
+    }
+    return rows;
+}
 
-    const d = agentData[name];
-    const target = d.target||0, collected = d.collected||0;
-    const deficit = target - collected;
-    const dailyReq = deficit>0 ? Math.ceil(deficit/DAYS_LEFT_INCLUDING_TODAY) : 0;
-    const avgCalls = d.calls>0 ? (d.calls/DAYS_FOR_CALLS).toFixed(1) : "0.0";
-
-    document.getElementById('target').textContent = formatLKR(target);
-    document.getElementById('collected').textContent = formatLKR(collected);
-    const defEl = document.getElementById('deficit');
-    defEl.textContent = formatLKR(deficit);
-    defEl.classList.toggle('positive', deficit <= 0);
-    defEl.classList.toggle('negative', deficit > 0);
-
-    document.getElementById("daysLeft").textContent = DAYS_LEFT_INCLUDING_TODAY;
-    document.getElementById("dailyRequired").textContent = formatLKR(dailyReq) + "/day";
-    document.getElementById("calls").textContent = Number(d.calls || 0).toLocaleString();
-    document.getElementById("avgCalls").textContent = avgCalls;
-    document.getElementById("bonus").textContent = formatLKR(d.bonus);
-
-    // Progress bar
-    const pct = target > 0 ? (collected / target) * 100 : 0;
-    const pctClamped = clamp(0, Math.round(pct), 300); // allow >100% visually but cap at 300
-    const fill = document.getElementById('progressFill');
-    const pctLabel = document.getElementById('progressPercent');
-    const caption = document.getElementById('progressCaption');
-
-    fill.style.width = Math.min(pctClamped, 100) + '%';
-    pctLabel.textContent = `${pctClamped}%`;
-    caption.textContent = `${pctClamped}% of target`;
-
-    // If exceeded target, tint the bar green
-    if (pctClamped >= 100) {
-        fill.style.background = 'linear-gradient(90deg, #2ecc71, #27ae60)';
-    } else {
-        fill.style.background = 'linear-gradient(90deg, #34a4db, #3498db)';
+// Fetch Data
+async function fetchData() {
+    document.getElementById('loading').style.display = 'block';
+    try {
+        const resp = await fetch(CSV_URL + '&_=' + Date.now()); // bust cache
+        if (!resp.ok) throw new Error('Failed to fetch');
+        const text = await resp.text();
+        allRows = parseCSV(text);
+        console.log('Loaded', allRows.length, 'rows from Google Sheet');
+        populateFilters();
+        document.getElementById('loading').style.display = 'none';
+    } catch (e) {
+        console.error(e);
+        alert('Failed to load data. Check CSV URL or internet.');
+        document.getElementById('loading').style.display = 'none';
     }
 }
 
-function openTab(tabId) {
-    document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
+// Populate Agent & Date
+function populateFilters() {
+    const agents = [...new Set(allRows.map(r => r['Operator Name']))].filter(Boolean).sort();
+    const dates = [...new Set(allRows.map(r => r['Date']))].filter(Boolean).sort().reverse();
 
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    const tabBtn = document.querySelector(`.tab[onclick="openTab('${tabId}')"]`);
-    if (tabBtn) tabBtn.classList.add("active");
+    const agentSel = document.getElementById('agentSelect');
+    agentSel.innerHTML = '<option value="">-- Select Agent --</option>' +
+        agents.map(a => `<option value="${a}">${a}</option>`).join('');
 
-    if (tabId === 'agent') updateAgentStats();
+    const dateSel = document.getElementById('datePicker');
+    dateSel.innerHTML = '<option value="">-- Select Date --</option>' +
+        dates.map(d => `<option value="${d}">${d}</option>`).join('');
+
+    if (dates.length > 0) {
+        dateSel.value = dates[0];
+        selectedDate = dates[0];
+    }
+    updateStats();
+}
+
+// Update Stats
+function updateStats() {
+    selectedAgent = document.getElementById('agentSelect').value;
+    selectedDate = document.getElementById('datePicker').value;
+    document.getElementById('targetBox').style.display = selectedAgent ? 'block' : 'none';
+
+    if (!selectedAgent || !selectedDate) return;
+
+    const saved = localStorage.getItem(`target_${selectedAgent}`);
+    selectedTarget = saved ? Number(saved) : 6000000;
+    document.querySelectorAll('.target-btn').forEach(b => {
+        b.classList.toggle('selected', Number(b.dataset.val) === selectedTarget);
+    });
+
+    calculateStats();
+    updateBuckets();
+}
+
+// Calculate Stats
+function calculateStats() {
+    const row = allRows.find(r => r['Date'] === selectedDate && r['Operator Name'] === selectedAgent);
+    if (!row) {
+        alert('No data for this agent/date');
+        return;
+    }
+
+    const ytd = row.Collected || 0;
+    const bonus = row['Total Bonusses'] || 0;
+    const calls = row['Call count'] || 0;
+    const deficit = selectedTarget - ytd;
+    const daysLeft = 20;
+    const dailyReq = deficit > 0 ? Math.ceil(deficit / daysLeft) : 0;
+
+    document.getElementById('target').textContent = formatLKR(selectedTarget);
+    document.getElementById('collected').textContent = formatLKR(ytd);
+    document.getElementById('yesterdayCollected').textContent = 'LKR 0';
+    const defEl = document.getElementById('deficit');
+    defEl.textContent = formatLKR(Math.abs(deficit));
+    defEl.className = deficit > 0 ? 'negative' : 'positive';
+    document.getElementById('daysLeft').textContent = daysLeft;
+    document.getElementById('dailyRequired').textContent = formatLKR(dailyReq) + '/day';
+    document.getElementById('callsToday').textContent = calls;
+    document.getElementById('bonus').textContent = formatLKR(bonus);
+
+    const pct = selectedTarget > 0 ? (ytd / selectedTarget) * 100 : 0;
+    const pctR = Math.min(Math.round(pct), 300);
+    const fill = document.getElementById('progressFill');
+    fill.style.width = Math.min(pctR, 100) + '%';
+    document.getElementById('progressPercent').textContent = pctR + '%';
+    document.getElementById('progressCaption').textContent = pctR + '% of target';
+}
+
+// Update Buckets
+function updateBuckets() {
+    const today = allRows.filter(r => r.Date === selectedDate);
+    const buckets = {
+        without: 'Without+Pre+Due Collection',
+        soft: 'Soft Collection',
+        medium: 'Medium Collection',
+        hard: 'Hard Collection',
+        restruct: 'Restruct Collection'
+    };
+
+    Object.entries(buckets).forEach(([key, col]) => {
+        const sorted = today
+            .map(r => ({ name: r['Operator Name'], amt: Number(r[col]) || 0 }))
+            .sort((a, b) => b.amt - a.amt)
+            .slice(0, 5);
+        const tbody = document.querySelector(`#tbl${key.charAt(0).toUpperCase() + key.slice(1)} tbody`);
+        tbody.innerHTML = sorted.map((x, i) => `
+            <tr><td>${i+1}</td><td>${x.name}</td><td class="amount">${formatLKR(x.amt)}</td></tr>
+        `).join('');
+    });
+}
+
+// Target Buttons
+document.querySelectorAll('.target-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedTarget = Number(btn.dataset.val);
+        localStorage.setItem(`target_${selectedAgent}`, selectedTarget);
+        calculateStats();
+    };
+});
+
+// Tab Switch
+function openTab(id) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab[onclick="openTab('${id}')"]`).classList.add('active');
+    if (id === 'agent') calculateStats();
 }
 
 function clearSelection() {
-    document.getElementById("agentSelect").value = "";
-    // Reset key UI bits
-    document.getElementById("target").textContent = "LKR 6,000,000";
-    document.getElementById("collected").textContent = "LKR 0";
-    const deficitEl = document.getElementById("deficit");
-    deficitEl.textContent = "LKR 0";
-    deficitEl.classList.remove('positive');
-    deficitEl.classList.add('negative');
-    document.getElementById("dailyRequired").textContent = "LKR 0/day";
-    document.getElementById("calls").textContent = "0";
-    document.getElementById("avgCalls").textContent = "0.0";
-    document.getElementById("bonus").textContent = "LKR 0";
-    // progress
-    document.getElementById('progressFill').style.width = '0%';
-    document.getElementById('progressPercent').textContent = '0%';
-    document.getElementById('progressCaption').textContent = '0% of target';
+    document.getElementById('agentSelect').value = '';
+    document.getElementById('datePicker').value = '';
+    document.getElementById('targetBox').style.display = 'none';
 }
 
-// ---------- INIT ----------
-document.addEventListener("DOMContentLoaded", () => {
-    // Update month/year + footer days left dynamically
-    DAYS_LEFT_INCLUDING_TODAY = updateFooterAndHeaderDates();
+// Theme
+document.getElementById('themeToggle').onclick = () => {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+};
 
-    // Default to Agent tab
-    openTab('agent');
+// Auto-refresh every 5 min
+setInterval(fetchData, 5 * 60 * 1000);
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    fetchData();
+    document.getElementById('footerNote').innerHTML = `Live from Google Sheet | Auto-refresh every 5 min`;
+    const theme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', theme);
 });
 </script>
 </body>
