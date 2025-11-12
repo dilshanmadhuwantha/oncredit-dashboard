@@ -146,7 +146,7 @@ tr:hover{background:rgba(52,152,219,.1);}
 
 <script>
 // === CORRECT CSV LINK (ENTIRE DOCUMENT) ===
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?gid=1099036482&single=true&output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/pub?output=csv";
 
 let allRows = [];
 let selectedAgent = '';
@@ -194,7 +194,7 @@ async function fetchData() {
         const resp = await fetch(CSV_URL + '&_=' + Date.now());
         if (!resp.ok) throw new Error('Network error');
         const text = await resp.text();
-        if (text.trim() === '' || text.includes('Insufficient')) {
+        if (text.trim() === '' || text.includes('Insufficient') || text.includes('Error')) {
             throw new Error('CSV is empty. Publish as .csv');
         }
         allRows = parseCSV(text);
@@ -205,12 +205,13 @@ async function fetchData() {
         console.error(e);
         loading.style.display = 'none';
         error.style.display = 'block';
-        error.innerHTML = `<strong>Failed to load data</strong><br>
-        1. <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">Open Sheet</a><br>
-        2. <strong>File → Share → Publish to web</strong><br>
-        3. <strong>Entire Document → .csv</strong><br>
-        4. Click <strong>Publish</strong><br>
-        5. Click <strong>Refresh Data</strong>`;
+        error.innerHTML = `
+            <strong>Failed to load data</strong><br>
+            <small>1. <a href="https://docs.google.com/spreadsheets/d/2PACX-1vQLhHuXwdx3qvaDJ0wbiH_u7MQAMk_sdeb8DDor-Zyhn8rDi4O9oj91L1FtlxdOeqheEiikqKizeBm0/edit" target="_blank">Open Sheet</a><br>
+            2. <strong>File → Share → Publish to web</strong><br>
+            3. <strong>Entire Document → .csv</strong><br>
+            4. Click <strong>Publish</strong><br>
+            5. Click <strong>Refresh Data</strong></small>`;
     }
 }
 
@@ -272,7 +273,7 @@ function calculateStats() {
         return;
     }
 
-    const ytd = row['Paid amount'] || 0;  // CORRECT COLUMN
+    const ytd = row['Paid amount'] || 0;  // CORRECT
     const bonus = row['Total Bonusses'] || 0;
     const calls = row['Call count'] || 0;
     const newLoans = row['New loan count'] || 0;
